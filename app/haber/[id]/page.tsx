@@ -55,7 +55,7 @@ export default async function HaberDetay({
     <main className="max-w-4xl mx-auto px-4 py-8">
       <article>
         <div className="mb-4">
-          <span className="text-xs font-semibold bg-[#1a1a2e] text-yellow-400 px-3 py-1 rounded-full uppercase tracking-wide">
+          <span className="text-xs font-semibold bg-[#2f4f4f] text-amber-500 px-3 py-1 rounded-full uppercase tracking-wide">
             {kategoriIsimler[haber.kategori] || haber.kategori}
           </span>
         </div>

@@ -26,7 +26,7 @@ export default function RootLayout({
         <SessionProvider>
           <Navbar />
           <div className="flex-1">{children}</div>
-          <footer className="bg-[#1a1a2e] text-gray-400 text-center text-xs py-6 mt-10">
+          <footer className="bg-[#2f4f4f] text-gray-400 text-center text-xs py-6 mt-10">
             <p>© {new Date().getFullYear()} Köprübaşı Gazetesi — Tüm hakları saklıdır</p>
           </footer>
         </SessionProvider>

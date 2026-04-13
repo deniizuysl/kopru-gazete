@@ -146,7 +146,7 @@ export default function AdminPanel({ haberler: baslangicHaberler, yorumlar: basl
             onClick={() => setAktifTab(tab)}
             className={`pb-3 px-1 text-sm font-medium transition-colors capitalize ${
               aktifTab === tab
-                ? "border-b-2 border-yellow-500 text-gray-900"
+                ? "border-b-2 border-amber-500 text-gray-900"
                 : "text-gray-500 hover:text-gray-700"
             }`}
           >
@@ -160,7 +160,7 @@ export default function AdminPanel({ haberler: baslangicHaberler, yorumlar: basl
           {haberler.map((haber) => (
             <div key={haber.id} className="bg-white border rounded-lg p-4 flex items-start justify-between gap-4">
               <div className="flex-1 min-w-0">
-                <Link href={`/haber/${haber.id}`} target="_blank" className="font-medium text-sm text-gray-900 hover:text-yellow-700 line-clamp-2">
+                <Link href={`/haber/${haber.id}`} target="_blank" className="font-medium text-sm text-gray-900 hover:text-amber-700 line-clamp-2">
                   {haber.baslik}
                 </Link>
                 <div className="flex flex-wrap gap-3 mt-1.5 text-xs text-gray-400">
@@ -211,7 +211,7 @@ export default function AdminPanel({ haberler: baslangicHaberler, yorumlar: basl
                 placeholder="Reklam başlığı (örn: Köprübaşı Eczanesi)"
                 value={reklamBaslik}
                 onChange={(e) => setReklamBaslik(e.target.value)}
-                className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
                 required
               />
               <input
@@ -219,7 +219,7 @@ export default function AdminPanel({ haberler: baslangicHaberler, yorumlar: basl
                 placeholder="Tıklama URL'si (isteğe bağlı)"
                 value={reklamUrl}
                 onChange={(e) => setReklamUrl(e.target.value)}
-                className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
               />
               <div>
                 <p className="text-xs text-gray-500 mb-1">Resim URL'si (Cloudinary, Google Drive vb.)</p>
@@ -228,7 +228,7 @@ export default function AdminPanel({ haberler: baslangicHaberler, yorumlar: basl
                   placeholder="https://... (resim URL'si)"
                   value={reklamResimUrl}
                   onChange={(e) => { setReklamResimUrl(e.target.value); setReklamResim(null); setOnizleme(e.target.value); }}
-                  className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400 mb-2"
+                  className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 mb-2"
                 />
                 <p className="text-xs text-gray-400 text-center mb-1">— veya bilgisayardan yükle —</p>
                 <input
@@ -241,7 +241,7 @@ export default function AdminPanel({ haberler: baslangicHaberler, yorumlar: basl
                     if (f) { setReklamResim(f); setReklamResimUrl(""); setOnizleme(URL.createObjectURL(f)); }
                   }}
                 />
-                <button type="button" onClick={() => dosyaRef.current?.click()} className="w-full border-2 border-dashed border-gray-300 rounded-lg py-3 text-sm text-gray-500 hover:border-yellow-400 hover:text-yellow-600 transition-colors">
+                <button type="button" onClick={() => dosyaRef.current?.click()} className="w-full border-2 border-dashed border-gray-300 rounded-lg py-3 text-sm text-gray-500 hover:border-amber-500 hover:text-yellow-600 transition-colors">
                   {reklamResim ? reklamResim.name : "Dosya seç"}
                 </button>
                 {onizleme && (
@@ -250,7 +250,7 @@ export default function AdminPanel({ haberler: baslangicHaberler, yorumlar: basl
                   </div>
                 )}
               </div>
-              <button type="submit" disabled={reklamYukleniyor || !reklamBaslik || (!reklamResim && !reklamResimUrl)} className="w-full bg-[#1a1a2e] text-white py-2 rounded text-sm font-medium hover:bg-gray-800 disabled:opacity-50 transition-colors">
+              <button type="submit" disabled={reklamYukleniyor || !reklamBaslik || (!reklamResim && !reklamResimUrl)} className="w-full bg-[#2f4f4f] text-white py-2 rounded text-sm font-medium hover:bg-gray-800 disabled:opacity-50 transition-colors">
                 {reklamYukleniyor ? "Yükleniyor..." : "Reklamı Ekle"}
               </button>
               {reklamHata && <p className="text-red-500 text-sm mt-2">{reklamHata}</p>}

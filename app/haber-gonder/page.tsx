@@ -28,8 +28,8 @@ export default function HaberGonderPage() {
       <div className="max-w-md mx-auto px-4 py-20 text-center">
         <h2 className="text-2xl font-serif font-bold text-gray-900 mb-4">Haber göndermek için giriş yapın</h2>
         <div className="flex gap-3 justify-center">
-          <Link href="/giris" className="bg-[#1a1a2e] text-white px-6 py-2.5 rounded-lg font-medium hover:bg-gray-800 transition-colors">Giriş Yap</Link>
-          <Link href="/kayit" className="bg-yellow-500 text-black px-6 py-2.5 rounded-lg font-medium hover:bg-yellow-400 transition-colors">Kayıt Ol</Link>
+          <Link href="/giris" className="bg-[#2f4f4f] text-white px-6 py-2.5 rounded-lg font-medium hover:bg-gray-800 transition-colors">Giriş Yap</Link>
+          <Link href="/kayit" className="bg-amber-500 text-black px-6 py-2.5 rounded-lg font-medium hover:bg-amber-500 transition-colors">Kayıt Ol</Link>
         </div>
       </div>
     );
@@ -134,7 +134,7 @@ export default function HaberGonderPage() {
             placeholder="Ne oldu? Nerede? Ne zaman? Kimler vardı? Detayları yazın..."
             rows={8}
             required
-            className="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400 resize-none"
+            className="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 resize-none"
           />
           <p className="text-xs text-gray-400 mt-1">{icerik.length} karakter</p>
         </div>
@@ -164,7 +164,7 @@ export default function HaberGonderPage() {
           {fotograflar.length < 5 && (
             <div
               onClick={() => dosyaInputRef.current?.click()}
-              className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer hover:border-yellow-400 transition-colors"
+              className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer hover:border-amber-500 transition-colors"
             >
               {fotografYukleniyor ? (
                 <p className="text-sm text-gray-500">Yükleniyor...</p>
@@ -204,7 +204,7 @@ export default function HaberGonderPage() {
                 value={yazarAdi}
                 onChange={(e) => setYazarAdi(e.target.value)}
                 placeholder={session?.user?.name || "Ad Soyad"}
-                className="w-full border border-gray-200 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                className="w-full border border-gray-200 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
               />
             </div>
           )}
@@ -217,7 +217,7 @@ export default function HaberGonderPage() {
         <button
           type="submit"
           disabled={gonderiyor || fotografYukleniyor}
-          className="w-full bg-yellow-500 text-black font-bold py-3 rounded-lg hover:bg-yellow-400 disabled:opacity-50 transition-colors text-sm"
+          className="w-full bg-amber-500 text-black font-bold py-3 rounded-lg hover:bg-amber-500 disabled:opacity-50 transition-colors text-sm"
         >
           {gonderiyor ? "Yapay Zeka Haberinizi Yazıyor..." : "Haber Gönder"}
         </button>

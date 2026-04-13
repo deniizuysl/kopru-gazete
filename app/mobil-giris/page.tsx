@@ -27,7 +27,7 @@ function MobilGirisIcerik() {
 
   if (status === "loading") {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#1a1a2e]">
+      <div className="min-h-screen flex items-center justify-center bg-[#2f4f4f]">
         <p className="text-white">Yükleniyor...</p>
       </div>
     );
@@ -35,14 +35,14 @@ function MobilGirisIcerik() {
 
   if (status === "authenticated") {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#1a1a2e]">
+      <div className="min-h-screen flex items-center justify-center bg-[#2f4f4f]">
         <p className="text-white">Uygulamaya yönlendiriliyorsunuz...</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#1a1a2e]">
+    <div className="min-h-screen flex items-center justify-center bg-[#2f4f4f]">
       <div className="bg-white rounded-2xl p-8 w-full max-w-sm text-center">
         <div className="text-6xl mb-4">📰</div>
         <h1 className="text-xl font-bold text-gray-900 mb-2">Köprübaşı Gazetesi</h1>
@@ -62,7 +62,7 @@ function MobilGirisIcerik() {
 export default function MobilGiris() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center bg-[#1a1a2e]">
+      <div className="min-h-screen flex items-center justify-center bg-[#2f4f4f]">
         <p className="text-white">Yükleniyor...</p>
       </div>
     }>

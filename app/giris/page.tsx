@@ -41,7 +41,7 @@ export default function GirisPage() {
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
       <div className="bg-white rounded-xl shadow-md p-8 w-full max-w-md">
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-serif font-bold text-[#1a1a2e]">Köprübaşı Gazetesi</h1>
+          <h1 className="text-2xl font-serif font-bold text-[#2f4f4f]">Köprübaşı Gazetesi</h1>
           <p className="text-gray-500 text-sm mt-1">Hesabınıza giriş yapın</p>
         </div>
 
@@ -72,7 +72,7 @@ export default function GirisPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
               placeholder="ornek@email.com"
             />
           </div>
@@ -83,7 +83,7 @@ export default function GirisPage() {
               value={sifre}
               onChange={(e) => setSifre(e.target.value)}
               required
-              className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
               placeholder="••••••"
             />
           </div>
@@ -97,7 +97,7 @@ export default function GirisPage() {
           <button
             type="submit"
             disabled={yukleniyor}
-            className="w-full bg-[#1a1a2e] text-white py-2.5 rounded-lg font-medium hover:bg-gray-800 disabled:opacity-50 transition-colors"
+            className="w-full bg-[#2f4f4f] text-white py-2.5 rounded-lg font-medium hover:bg-gray-800 disabled:opacity-50 transition-colors"
           >
             {yukleniyor ? "Giriş yapılıyor..." : "Giriş Yap"}
           </button>

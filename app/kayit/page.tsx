@@ -53,7 +53,7 @@ export default function KayitPage() {
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
       <div className="bg-white rounded-xl shadow-md p-8 w-full max-w-md">
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-serif font-bold text-[#1a1a2e]">Köprübaşı Gazetesi</h1>
+          <h1 className="text-2xl font-serif font-bold text-[#2f4f4f]">Köprübaşı Gazetesi</h1>
           <p className="text-gray-500 text-sm mt-1">Yeni hesap oluşturun</p>
         </div>
 
@@ -84,7 +84,7 @@ export default function KayitPage() {
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
               required
-              className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
               placeholder="Adınız Soyadınız"
             />
           </div>
@@ -95,7 +95,7 @@ export default function KayitPage() {
               value={form.email}
               onChange={(e) => setForm({ ...form, email: e.target.value })}
               required
-              className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
               placeholder="ornek@email.com"
             />
           </div>
@@ -107,7 +107,7 @@ export default function KayitPage() {
               onChange={(e) => setForm({ ...form, password: e.target.value })}
               required
               minLength={6}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
               placeholder="En az 6 karakter"
             />
           </div>
@@ -121,7 +121,7 @@ export default function KayitPage() {
           <button
             type="submit"
             disabled={yukleniyor}
-            className="w-full bg-[#1a1a2e] text-white py-2.5 rounded-lg font-medium hover:bg-gray-800 disabled:opacity-50 transition-colors"
+            className="w-full bg-[#2f4f4f] text-white py-2.5 rounded-lg font-medium hover:bg-gray-800 disabled:opacity-50 transition-colors"
           >
             {yukleniyor ? "Hesap oluşturuluyor..." : "Kayıt Ol"}
           </button>

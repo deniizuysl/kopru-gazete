@@ -72,7 +72,7 @@ export default function YorumBolumu({ haberId, yorumlar: baslangicYorumlar }: Yo
             placeholder="Yorumunuzu yazın..."
             maxLength={500}
             rows={3}
-            className="w-full border border-gray-300 rounded p-3 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400 resize-none"
+            className="w-full border border-gray-300 rounded p-3 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 resize-none"
           />
           <div className="flex items-center justify-between mt-2">
             <div className="flex items-center gap-3">
@@ -80,7 +80,7 @@ export default function YorumBolumu({ haberId, yorumlar: baslangicYorumlar }: Yo
               <button
                 type="submit"
                 disabled={gonderiyor || !icerik.trim()}
-                className="bg-[#1a1a2e] text-white text-sm px-4 py-2 rounded hover:bg-gray-800 disabled:opacity-50 transition-colors"
+                className="bg-[#2f4f4f] text-white text-sm px-4 py-2 rounded hover:bg-gray-800 disabled:opacity-50 transition-colors"
               >
                 {gonderiyor ? "Gönderiliyor..." : "Yorum Yap"}
               </button>
@@ -93,7 +93,7 @@ export default function YorumBolumu({ haberId, yorumlar: baslangicYorumlar }: Yo
           <p className="text-gray-700 text-sm mb-2">Yorum yapmak için giriş yapmanız gerekiyor.</p>
           <Link
             href="/giris"
-            className="inline-block bg-[#1a1a2e] text-white text-sm px-4 py-2 rounded hover:bg-gray-800 transition-colors"
+            className="inline-block bg-[#2f4f4f] text-white text-sm px-4 py-2 rounded hover:bg-gray-800 transition-colors"
           >
             Giriş Yap
           </Link>
