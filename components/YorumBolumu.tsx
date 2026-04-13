@@ -9,8 +9,6 @@ import { tr } from "date-fns/locale";
 interface Yorum {
   id: string;
   icerik: string;
-  anonim: boolean;
-  yazarAdi?: string | null;
   createdAt: string;
   yazar?: { name?: string | null; image?: string | null } | null;
 }
@@ -24,7 +22,6 @@ export default function YorumBolumu({ haberId, yorumlar: baslangicYorumlar }: Yo
   const { data: session } = useSession();
   const [yorumlar, setYorumlar] = useState(baslangicYorumlar);
   const [icerik, setIcerik] = useState("");
-  const [anonim, setAnonim] = useState(false);
   const [gonderiyor, setGonderiyor] = useState(false);
   const [hata, setHata] = useState("");
 
@@ -42,8 +39,6 @@ export default function YorumBolumu({ haberId, yorumlar: baslangicYorumlar }: Yo
         body: JSON.stringify({
           icerik: icerik.trim(),
           haberId,
-          anonim,
-          yazarAdi: anonim ? undefined : session?.user?.name,
         }),
       });
 
@@ -80,15 +75,6 @@ export default function YorumBolumu({ haberId, yorumlar: baslangicYorumlar }: Yo
             className="w-full border border-gray-300 rounded p-3 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400 resize-none"
           />
           <div className="flex items-center justify-between mt-2">
-            <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={anonim}
-                onChange={(e) => setAnonim(e.target.checked)}
-                className="rounded"
-              />
-              Anonim olarak yorum yap
-            </label>
             <div className="flex items-center gap-3">
               <span className="text-xs text-gray-400">{icerik.length}/500</span>
               <button
@@ -121,9 +107,7 @@ export default function YorumBolumu({ haberId, yorumlar: baslangicYorumlar }: Yo
       ) : (
         <div className="space-y-4">
           {yorumlar.map((yorum) => {
-            const yazarAdi = yorum.anonim
-              ? "Anonim"
-              : yorum.yazarAdi || yorum.yazar?.name || "Bilinmiyor";
+            const yazarAdi = yorum.yazar?.name || "Bilinmiyor";
             const tarih = formatDistanceToNow(new Date(yorum.createdAt), {
               addSuffix: true,
               locale: tr,

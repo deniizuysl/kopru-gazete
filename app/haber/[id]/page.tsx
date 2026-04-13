@@ -92,8 +92,6 @@ export default async function HaberDetay({
         yorumlar={haber.yorumlar.map((y) => ({
           id: y.id,
           icerik: y.icerik,
-          anonim: y.anonim,
-          yazarAdi: y.yazarAdi,
           createdAt: y.createdAt.toISOString(),
           yazar: y.yazar,
         }))}
