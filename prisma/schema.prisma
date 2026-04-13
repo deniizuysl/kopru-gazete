@@ -18,12 +18,13 @@ model User {
   pushToken     String?
   createdAt     DateTime  @default(now())
 
-  accounts      Account[]
-  sessions      Session[]
-  haberler      Haber[]
-  yorumlar      Yorum[]
-  yorumBegeni   YorumBegeni[]
-  bildirimler   Bildirim[]
+  accounts          Account[]
+  sessions          Session[]
+  haberler          Haber[]
+  yorumlar          Yorum[]
+  yorumBegeni       YorumBegeni[]
+  bildirimler       Bildirim[]
+  kaydedilenHaberler KaydedilenHaber[]
 }
 
 model Account {
@@ -79,7 +80,8 @@ model Haber {
 
   yazarId  String?
   yazar    User?   @relation(fields: [yazarId], references: [id], onDelete: SetNull)
-  yorumlar Yorum[]
+  yorumlar           Yorum[]
+  kaydedilenHaberler KaydedilenHaber[]
 }
 
 model Yorum {
@@ -128,6 +130,19 @@ model Reklam {
   tiklamaUrl String?
   aktif      Boolean  @default(true)
   createdAt  DateTime @default(now())
+}
+
+model KaydedilenHaber {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  kullaniciId String
+  kullanici   User   @relation(fields: [kullaniciId], references: [id], onDelete: Cascade)
+
+  haberId String
+  haber   Haber  @relation(fields: [haberId], references: [id], onDelete: Cascade)
+
+  @@unique([kullaniciId, haberId])
 }
 
 model Etkinlik {
