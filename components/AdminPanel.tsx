@@ -56,6 +56,7 @@ export default function AdminPanel({ haberler: baslangicHaberler, yorumlar: basl
   const [reklamUrl, setReklamUrl] = useState("");
   const [reklamResim, setReklamResim] = useState<File | null>(null);
   const [reklamYukleniyor, setReklamYukleniyor] = useState(false);
+  const [reklamHata, setReklamHata] = useState("");
   const [onizleme, setOnizleme] = useState<string | null>(null);
   const dosyaRef = useRef<HTMLInputElement>(null);
 
@@ -98,13 +99,16 @@ export default function AdminPanel({ haberler: baslangicHaberler, yorumlar: basl
     formData.append("resim", reklamResim);
 
     const res = await fetch("/api/reklamlar", { method: "POST", body: formData });
+    const data = await res.json();
     if (res.ok) {
-      const yeni = await res.json();
-      setReklamlar([yeni, ...reklamlar]);
+      setReklamlar([data, ...reklamlar]);
       setReklamBaslik("");
       setReklamUrl("");
       setReklamResim(null);
       setOnizleme(null);
+      setReklamHata("");
+    } else {
+      setReklamHata(data.error || `Hata: ${res.status}`);
     }
     setReklamYukleniyor(false);
   }
@@ -219,6 +223,7 @@ export default function AdminPanel({ haberler: baslangicHaberler, yorumlar: basl
               <button type="submit" disabled={reklamYukleniyor || !reklamBaslik || !reklamResim} className="w-full bg-[#1a1a2e] text-white py-2 rounded text-sm font-medium hover:bg-gray-800 disabled:opacity-50 transition-colors">
                 {reklamYukleniyor ? "Yükleniyor..." : "Reklamı Ekle"}
               </button>
+              {reklamHata && <p className="text-red-500 text-sm mt-2">{reklamHata}</p>}
             </div>
           </form>
 
