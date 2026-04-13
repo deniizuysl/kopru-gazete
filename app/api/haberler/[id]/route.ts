@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
+import { mobilTokenDogrula } from "@/lib/mobil-auth";
 import { prisma } from "@/lib/prisma";
 
 export async function GET(
@@ -38,9 +39,14 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await auth();
-  if (!session?.user || session.user.role !== "ADMIN") {
-    return NextResponse.json({ error: "Yetkisiz erişim" }, { status: 403 });
+  const mobilKullanici = await mobilTokenDogrula(request.headers.get("authorization"));
+  if (mobilKullanici) {
+    if (mobilKullanici.role !== "ADMIN") return NextResponse.json({ error: "Yetkisiz" }, { status: 403 });
+  } else {
+    const session = await auth();
+    if (!session?.user || session.user.role !== "ADMIN") {
+      return NextResponse.json({ error: "Yetkisiz erişim" }, { status: 403 });
+    }
   }
 
   const { id } = await params;
