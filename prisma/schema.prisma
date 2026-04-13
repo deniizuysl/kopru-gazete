@@ -120,6 +120,15 @@ model Bildirim {
   kullanici   User   @relation(fields: [kullaniciId], references: [id], onDelete: Cascade)
 }
 
+model Reklam {
+  id         String   @id @default(cuid())
+  baslik     String
+  resimUrl   String
+  tiklamaUrl String?
+  aktif      Boolean  @default(true)
+  createdAt  DateTime @default(now())
+}
+
 enum Role {
   USER
   ADMIN

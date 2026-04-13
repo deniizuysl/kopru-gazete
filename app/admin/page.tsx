@@ -10,7 +10,7 @@ export default async function AdminPage() {
     redirect("/");
   }
 
-  const [haberler, yorumlar] = await Promise.all([
+  const [haberler, yorumlar, reklamlar] = await Promise.all([
     prisma.haber.findMany({
       orderBy: { createdAt: "desc" },
       take: 50,
@@ -38,12 +38,15 @@ export default async function AdminPage() {
         yazar: { select: { name: true } },
       },
     }),
+    prisma.reklam.findMany({
+      orderBy: { createdAt: "desc" },
+    }),
   ]);
 
   return (
     <main className="max-w-6xl mx-auto px-4 py-8">
       <h1 className="text-2xl font-serif font-bold text-gray-900 mb-2">Admin Paneli</h1>
-      <p className="text-gray-600 text-sm mb-8">Haber ve yorum yönetimi</p>
+      <p className="text-gray-600 text-sm mb-8">Haber, yorum ve reklam yönetimi</p>
       <AdminPanel
         haberler={haberler.map((h) => ({
           ...h,
@@ -57,6 +60,10 @@ export default async function AdminPage() {
           createdAt: y.createdAt.toISOString(),
           haberBaslik: y.haber.baslik,
           yazar: y.yazar,
+        }))}
+        reklamlar={reklamlar.map((r) => ({
+          ...r,
+          createdAt: r.createdAt.toISOString(),
         }))}
       />
     </main>
