@@ -55,6 +55,7 @@ export default function AdminPanel({ haberler: baslangicHaberler, yorumlar: basl
   const [reklamBaslik, setReklamBaslik] = useState("");
   const [reklamUrl, setReklamUrl] = useState("");
   const [reklamResim, setReklamResim] = useState<File | null>(null);
+  const [reklamResimUrl, setReklamResimUrl] = useState("");
   const [reklamYukleniyor, setReklamYukleniyor] = useState(false);
   const [reklamHata, setReklamHata] = useState("");
   const [onizleme, setOnizleme] = useState<string | null>(null);
@@ -90,13 +91,17 @@ export default function AdminPanel({ haberler: baslangicHaberler, yorumlar: basl
 
   async function reklamEkle(e: React.FormEvent) {
     e.preventDefault();
-    if (!reklamBaslik || !reklamResim) return;
+    if (!reklamBaslik || (!reklamResim && !reklamResimUrl)) return;
     setReklamYukleniyor(true);
 
     const formData = new FormData();
     formData.append("baslik", reklamBaslik);
     formData.append("tiklamaUrl", reklamUrl);
-    formData.append("resim", reklamResim);
+    if (reklamResimUrl) {
+      formData.append("resimUrl", reklamResimUrl);
+    } else if (reklamResim) {
+      formData.append("resim", reklamResim);
+    }
 
     const res = await fetch("/api/reklamlar", { method: "POST", body: formData });
     const data = await res.json();
@@ -198,6 +203,15 @@ export default function AdminPanel({ haberler: baslangicHaberler, yorumlar: basl
                 className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400"
               />
               <div>
+                <p className="text-xs text-gray-500 mb-1">Resim URL'si (Cloudinary, Google Drive vb.)</p>
+                <input
+                  type="url"
+                  placeholder="https://... (resim URL'si)"
+                  value={reklamResimUrl}
+                  onChange={(e) => { setReklamResimUrl(e.target.value); setReklamResim(null); setOnizleme(e.target.value); }}
+                  className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400 mb-2"
+                />
+                <p className="text-xs text-gray-400 text-center mb-1">— veya bilgisayardan yükle —</p>
                 <input
                   ref={dosyaRef}
                   type="file"
@@ -205,22 +219,19 @@ export default function AdminPanel({ haberler: baslangicHaberler, yorumlar: basl
                   className="hidden"
                   onChange={(e) => {
                     const f = e.target.files?.[0];
-                    if (f) {
-                      setReklamResim(f);
-                      setOnizleme(URL.createObjectURL(f));
-                    }
+                    if (f) { setReklamResim(f); setReklamResimUrl(""); setOnizleme(URL.createObjectURL(f)); }
                   }}
                 />
-                <button type="button" onClick={() => dosyaRef.current?.click()} className="w-full border-2 border-dashed border-gray-300 rounded-lg py-4 text-sm text-gray-500 hover:border-yellow-400 hover:text-yellow-600 transition-colors">
-                  {reklamResim ? reklamResim.name : "Reklam resmi seç"}
+                <button type="button" onClick={() => dosyaRef.current?.click()} className="w-full border-2 border-dashed border-gray-300 rounded-lg py-3 text-sm text-gray-500 hover:border-yellow-400 hover:text-yellow-600 transition-colors">
+                  {reklamResim ? reklamResim.name : "Dosya seç"}
                 </button>
                 {onizleme && (
                   <div className="mt-2 relative w-full h-32 rounded overflow-hidden">
-                    <Image src={onizleme} alt="Önizleme" fill className="object-cover" />
+                    <Image src={onizleme} alt="Önizleme" fill className="object-cover" unoptimized />
                   </div>
                 )}
               </div>
-              <button type="submit" disabled={reklamYukleniyor || !reklamBaslik || !reklamResim} className="w-full bg-[#1a1a2e] text-white py-2 rounded text-sm font-medium hover:bg-gray-800 disabled:opacity-50 transition-colors">
+              <button type="submit" disabled={reklamYukleniyor || !reklamBaslik || (!reklamResim && !reklamResimUrl)} className="w-full bg-[#1a1a2e] text-white py-2 rounded text-sm font-medium hover:bg-gray-800 disabled:opacity-50 transition-colors">
                 {reklamYukleniyor ? "Yükleniyor..." : "Reklamı Ekle"}
               </button>
               {reklamHata && <p className="text-red-500 text-sm mt-2">{reklamHata}</p>}

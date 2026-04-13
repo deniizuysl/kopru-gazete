@@ -20,17 +20,22 @@ export async function POST(req: NextRequest) {
   const formData = await req.formData();
   const baslik = formData.get("baslik") as string;
   const tiklamaUrl = formData.get("tiklamaUrl") as string;
-  const resim = formData.get("resim") as File;
+  const resimUrl = formData.get("resimUrl") as string;
+  const resim = formData.get("resim") as File | null;
 
-  if (!baslik || !resim) {
+  if (!baslik || (!resimUrl && !resim)) {
     return NextResponse.json({ error: "Baslik ve resim zorunlu" }, { status: 400 });
   }
 
-  const buffer = Buffer.from(await resim.arrayBuffer());
-  const { url } = await uploadImage(buffer, "reklam");
+  let finalResimUrl = resimUrl;
+  if (!finalResimUrl && resim) {
+    const buffer = Buffer.from(await resim.arrayBuffer());
+    const { url } = await uploadImage(buffer, "reklam");
+    finalResimUrl = url;
+  }
 
   const reklam = await prisma.reklam.create({
-    data: { baslik, resimUrl: url, tiklamaUrl: tiklamaUrl || null },
+    data: { baslik, resimUrl: finalResimUrl, tiklamaUrl: tiklamaUrl || null },
   });
 
   return NextResponse.json(reklam);
