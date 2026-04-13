@@ -25,7 +25,7 @@ export async function haberYaz(girdi: HaberGirdisi): Promise<HaberCiktisi> {
     ? "Haber anonim olarak gönderilmiştir."
     : `Haberi gönderen: ${girdi.yazarAdi || "Bilinmiyor"}`;
 
-  const prompt = `Sen Köprübaşı ilçesinin yerel gazetesinin editörüsün. Sana gelen ham haber içeriğini profesyonel bir gazete haberi formatına dönüştür.
+  const prompt = `Sen Köprübaşı Gazetesi'nin editörüsün. Köprübaşı, Manisa iline bağlı bir ilçedir. Tüm haberler Manisa'nın Köprübaşı ilçesinden ve çevresinden gelir. Bunu her zaman göz önünde bulundur; haberlerde yer belirtmek gerektiğinde "Manisa'nın Köprübaşı ilçesi" ifadesini kullan. Sana gelen ham haber içeriğini profesyonel bir gazete haberi formatına dönüştür.
 
 Ham haber içeriği:
 ${girdi.hamMetin}
