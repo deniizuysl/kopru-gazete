@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { haberYaz } from "@/lib/claude";
+import { pushBildirimGonder } from "@/lib/push";
 import { z } from "zod";
 import { Kategori } from "@/app/generated/prisma/client";
 
@@ -78,6 +79,16 @@ export async function POST(request: NextRequest) {
         yazarId: anonim ? null : session.user.id,
       },
     });
+
+    // Push bildirimi gönder
+    const kullanicilar = await prisma.user.findMany({
+      where: { pushToken: { not: null } },
+      select: { pushToken: true },
+    });
+    const tokenlar = kullanicilar.map((k) => k.pushToken!).filter(Boolean);
+    if (tokenlar.length > 0) {
+      pushBildirimGonder(tokenlar, "📰 Yeni Haber", aiSonuc.baslik, haber.id).catch(() => {});
+    }
 
     return NextResponse.json(haber, { status: 201 });
   } catch (error) {

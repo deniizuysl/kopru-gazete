@@ -15,6 +15,7 @@ model User {
   image         String?
   password      String?
   role          Role      @default(USER)
+  pushToken     String?
   createdAt     DateTime  @default(now())
 
   accounts      Account[]
@@ -127,6 +128,42 @@ model Reklam {
   tiklamaUrl String?
   aktif      Boolean  @default(true)
   createdAt  DateTime @default(now())
+}
+
+model Etkinlik {
+  id        String   @id @default(cuid())
+  baslik    String
+  aciklama  String   @db.Text
+  tarih     DateTime
+  konum     String?
+  createdAt DateTime @default(now())
+}
+
+model Anket {
+  id        String          @id @default(cuid())
+  soru      String
+  aktif     Boolean         @default(true)
+  createdAt DateTime        @default(now())
+  secenekler AnketSecenegi[]
+}
+
+model AnketSecenegi {
+  id       String      @id @default(cuid())
+  metin    String
+  anketId  String
+  anket    Anket       @relation(fields: [anketId], references: [id], onDelete: Cascade)
+  oylar    AnketOyu[]
+}
+
+model AnketOyu {
+  id          String        @id @default(cuid())
+  createdAt   DateTime      @default(now())
+  secenekId   String
+  secenek     AnketSecenegi @relation(fields: [secenekId], references: [id], onDelete: Cascade)
+  anketId     String
+  kullaniciId String
+
+  @@unique([anketId, kullaniciId])
 }
 
 enum Role {
