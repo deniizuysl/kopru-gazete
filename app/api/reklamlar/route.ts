@@ -17,25 +17,14 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Yetkisiz" }, { status: 401 });
   }
 
-  const formData = await req.formData();
-  const baslik = formData.get("baslik") as string;
-  const tiklamaUrl = formData.get("tiklamaUrl") as string;
-  const resimUrl = formData.get("resimUrl") as string;
-  const resim = formData.get("resim") as File | null;
+  const { baslik, tiklamaUrl, resimUrl } = await req.json();
 
-  if (!baslik || (!resimUrl && !resim)) {
+  if (!baslik || !resimUrl) {
     return NextResponse.json({ error: "Baslik ve resim zorunlu" }, { status: 400 });
   }
 
-  let finalResimUrl = resimUrl;
-  if (!finalResimUrl && resim) {
-    const buffer = Buffer.from(await resim.arrayBuffer());
-    const { url } = await uploadImage(buffer, "reklam");
-    finalResimUrl = url;
-  }
-
   const reklam = await prisma.reklam.create({
-    data: { baslik, resimUrl: finalResimUrl, tiklamaUrl: tiklamaUrl || null },
+    data: { baslik, resimUrl, tiklamaUrl: tiklamaUrl || null },
   });
 
   return NextResponse.json(reklam);

@@ -89,31 +89,50 @@ export default function AdminPanel({ haberler: baslangicHaberler, yorumlar: basl
     setSiliniyor(null);
   }
 
+  async function cloudinaryYukle(dosya: File): Promise<string> {
+    const formData = new FormData();
+    formData.append("file", dosya);
+    formData.append("upload_preset", "koprugazete_unsigned");
+    formData.append("folder", "reklamlar");
+    const res = await fetch("https://api.cloudinary.com/v1_1/ddbj0qkxm/image/upload", {
+      method: "POST",
+      body: formData,
+    });
+    const data = await res.json();
+    if (!data.secure_url) throw new Error("Cloudinary yükleme hatası");
+    return data.secure_url;
+  }
+
   async function reklamEkle(e: React.FormEvent) {
     e.preventDefault();
     if (!reklamBaslik || (!reklamResim && !reklamResimUrl)) return;
     setReklamYukleniyor(true);
+    setReklamHata("");
 
-    const formData = new FormData();
-    formData.append("baslik", reklamBaslik);
-    formData.append("tiklamaUrl", reklamUrl);
-    if (reklamResimUrl) {
-      formData.append("resimUrl", reklamResimUrl);
-    } else if (reklamResim) {
-      formData.append("resim", reklamResim);
-    }
+    try {
+      let finalUrl = reklamResimUrl;
+      if (reklamResim && !reklamResimUrl) {
+        finalUrl = await cloudinaryYukle(reklamResim);
+      }
 
-    const res = await fetch("/api/reklamlar", { method: "POST", body: formData });
-    const data = await res.json();
-    if (res.ok) {
-      setReklamlar([data, ...reklamlar]);
-      setReklamBaslik("");
-      setReklamUrl("");
-      setReklamResim(null);
-      setOnizleme(null);
-      setReklamHata("");
-    } else {
-      setReklamHata(data.error || `Hata: ${res.status}`);
+      const res = await fetch("/api/reklamlar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ baslik: reklamBaslik, tiklamaUrl: reklamUrl, resimUrl: finalUrl }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setReklamlar([data, ...reklamlar]);
+        setReklamBaslik("");
+        setReklamUrl("");
+        setReklamResim(null);
+        setReklamResimUrl("");
+        setOnizleme(null);
+      } else {
+        setReklamHata(data.error || `Hata: ${res.status}`);
+      }
+    } catch (err: any) {
+      setReklamHata(err.message || "Yükleme hatası");
     }
     setReklamYukleniyor(false);
   }
