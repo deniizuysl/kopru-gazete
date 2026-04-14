@@ -76,6 +76,8 @@ model Haber {
   anonim        Boolean  @default(false)
   yazarAdi      String?
   yayinlandiMi  Boolean  @default(true)
+  spam          Boolean  @default(false)
+  spamNedeni    String?
   goruntuSayisi Int      @default(0)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt

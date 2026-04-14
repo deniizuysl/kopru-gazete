@@ -3,6 +3,7 @@ import { mobilTokenDogrula } from "@/lib/mobil-auth";
 import { prisma } from "@/lib/prisma";
 import { haberYaz } from "@/lib/claude";
 import { uploadImage } from "@/lib/cloudinary";
+import { icerikModere } from "@/lib/moderasyon";
 import { Kategori } from "@/app/generated/prisma/client";
 
 export async function POST(request: NextRequest) {
@@ -40,7 +41,10 @@ export async function POST(request: NextRequest) {
       yazarAdi: anonim ? undefined : kullanici.name,
     });
 
-    const haber = await prisma.haber.create({
+    // Moderasyon kontrolü
+    const moderasyon = await icerikModere(aiSonuc.baslik, aiSonuc.icerik);
+
+    const haber = await (prisma as any).haber.create({
       data: {
         baslik: aiSonuc.baslik,
         icerik: aiSonuc.icerik,
@@ -51,8 +55,18 @@ export async function POST(request: NextRequest) {
         anonim,
         yazarAdi: anonim ? null : kullanici.name,
         yazarId: anonim ? null : kullanici.id,
+        spam: moderasyon.spam,
+        spamNedeni: moderasyon.spam ? moderasyon.neden : null,
+        yayinlandiMi: !moderasyon.spam,
       },
     });
+
+    if (moderasyon.spam) {
+      return NextResponse.json(
+        { error: "İçeriğiniz incelemeye alındı.", spam: true },
+        { status: 422 }
+      );
+    }
 
     return NextResponse.json(haber, { status: 201 });
   } catch (e) {

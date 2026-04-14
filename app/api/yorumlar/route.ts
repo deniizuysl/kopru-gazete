@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { mobilTokenDogrula } from "@/lib/mobil-auth";
+import { pushBildirimGonder } from "@/lib/push";
 import { z } from "zod";
 
 const yorumSchema = z.object({
@@ -46,16 +47,34 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // Haber sahibine bildirim gönder (anonim haber değilse ve farklı kullanıcıysa)
+    // Haber sahibine bildirim ve push gönder
     if (!haber.anonim && haber.yazarId && haber.yazarId !== kullanici.id) {
-      await prisma.bildirim.create({
-        data: {
-          kullaniciId: haber.yazarId,
-          mesaj: `"${haber.baslik.slice(0, 50)}..." haberinize yeni bir yorum yapıldı.`,
-          haberId: haber.id,
-          yorumId: yorum.id,
-        },
-      });
+      try {
+        const haberYazari = await (prisma as any).user.findUnique({
+          where: { id: haber.yazarId },
+          select: { pushToken: true },
+        });
+
+        // DB bildirimi
+        await (prisma as any).bildirim.create({
+          data: {
+            kullaniciId: haber.yazarId,
+            mesaj: `"${haber.baslik.slice(0, 50)}..." haberinize yeni bir yorum yapıldı.`,
+            haberId: haber.id,
+            yorumId: yorum.id,
+          },
+        });
+
+        // Push bildirimi
+        if (haberYazari?.pushToken) {
+          await pushBildirimGonder(
+            [haberYazari.pushToken],
+            "Yeni Yorum",
+            `"${haber.baslik.slice(0, 40)}..." haberinize yorum yapıldı.`,
+            haber.id,
+          );
+        }
+      } catch {}
     }
 
     return NextResponse.json(yorum, { status: 201 });
