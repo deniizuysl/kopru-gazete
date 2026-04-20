@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="360" viewBox="0 0 900 360">
+  <!-- Background -->
+  <rect width="900" height="360" fill="#2f4f4f"/>
+
+  <!-- Top gold border -->
+  <rect y="0" width="900" height="6" fill="#c8a046"/>
+
+  <!-- Cream inner panel -->
+  <rect x="24" y="24" width="852" height="312" fill="none" stroke="#c8a046" stroke-width="1.5"/>
+  <rect x="28" y="28" width="844" height="304" fill="none" stroke="#c8a046" stroke-width="0.5" stroke-dasharray="4,4"/>
+
+  <!-- ===== BRIDGE ICON (left side) ===== -->
+  <!-- Arch 1 -->
+  <path d="M 80 200 Q 120 148 160 200" stroke="#c8a046" stroke-width="3.5" fill="none"/>
+  <!-- Arch 2 -->
+  <path d="M 160 200 Q 200 148 240 200" stroke="#c8a046" stroke-width="3.5" fill="none"/>
+  <!-- Bridge deck -->
+  <line x1="60" y1="200" x2="260" y2="200" stroke="#c8a046" stroke-width="2.5"/>
+  <!-- Left abutment -->
+  <line x1="60" y1="200" x2="60" y2="220" stroke="#c8a046" stroke-width="2.5"/>
+  <!-- Right abutment -->
+  <line x1="260" y1="200" x2="260" y2="220" stroke="#c8a046" stroke-width="2.5"/>
+  <!-- Center pier -->
+  <rect x="156" y="200" width="8" height="22" fill="#c8a046"/>
+  <!-- Pylons on deck -->
+  <line x1="90" y1="200" x2="90" y2="185" stroke="#c8a046" stroke-width="1.5"/>
+  <line x1="120" y1="200" x2="120" y2="175" stroke="#c8a046" stroke-width="1.5"/>
+  <line x1="150" y1="200" x2="150" y2="168" stroke="#c8a046" stroke-width="1.5"/>
+  <line x1="170" y1="200" x2="170" y2="168" stroke="#c8a046" stroke-width="1.5"/>
+  <line x1="200" y1="200" x2="200" y2="175" stroke="#c8a046" stroke-width="1.5"/>
+  <line x1="230" y1="200" x2="230" y2="185" stroke="#c8a046" stroke-width="1.5"/>
+  <!-- Water ripple -->
+  <path d="M 55 228 Q 100 220 160 226 Q 220 232 265 226" stroke="#7b8b4a" stroke-width="1.8" fill="none"/>
+  <path d="M 70 238 Q 115 231 160 236 Q 205 241 250 236" stroke="#7b8b4a" stroke-width="1.2" fill="none" opacity="0.6"/>
+  <!-- Base line -->
+  <line x1="60" y1="220" x2="260" y2="220" stroke="#c8a046" stroke-width="1" opacity="0.5"/>
+
+  <!-- ===== TITLE TEXT ===== -->
+  <!-- KÖPRÜ -->
+  <text x="460" y="145" font-family="Georgia, 'Times New Roman', serif" font-size="96" font-weight="bold"
+        fill="#c8a046" text-anchor="middle" letter-spacing="10">KÖPRÜ</text>
+
+  <!-- Divider line -->
+  <line x1="310" y1="162" x2="610" y2="162" stroke="#c8a046" stroke-width="1"/>
+
+  <!-- GAZETESİ -->
+  <text x="460" y="210" font-family="Georgia, 'Times New Roman', serif" font-size="42"
+        fill="#faf7f0" text-anchor="middle" letter-spacing="18">GAZETESİ</text>
+
+  <!-- Gold rule lines around GAZETESİ -->
+  <line x1="310" y1="220" x2="610" y2="220" stroke="#c8a046" stroke-width="1.5"/>
+
+  <!-- Subtitle -->
+  <text x="460" y="258" font-family="Georgia, 'Times New Roman', serif" font-size="16"
+        fill="#7b8b4a" text-anchor="middle" letter-spacing="5">KÖPRÜBAŞİ  ·  MANİSA</text>
+
+  <!-- Decorative dots -->
+  <circle cx="350" cy="258" r="3" fill="#c8a046"/>
+  <circle cx="570" cy="258" r="3" fill="#c8a046"/>
+
+  <!-- Tagline -->
+  <text x="460" y="296" font-family="Georgia, 'Times New Roman', serif" font-size="13"
+        fill="#faf7f0" text-anchor="middle" letter-spacing="3" opacity="0.7">Yerel Haberin Güvenilir Sesi</text>
+
+  <!-- Right side mirror bridge (decorative, faint) -->
+  <path d="M 660 200 Q 700 148 740 200" stroke="#c8a046" stroke-width="2" fill="none" opacity="0.4"/>
+  <path d="M 740 200 Q 780 148 820 200" stroke="#c8a046" stroke-width="2" fill="none" opacity="0.4"/>
+  <line x1="640" y1="200" x2="840" y2="200" stroke="#c8a046" stroke-width="1.5" opacity="0.4"/>
+  <line x1="640" y1="200" x2="640" y2="220" stroke="#c8a046" stroke-width="1.5" opacity="0.4"/>
+  <line x1="840" y1="200" x2="840" y2="220" stroke="#c8a046" stroke-width="1.5" opacity="0.4"/>
+  <rect x="736" y="200" width="8" height="22" fill="#c8a046" opacity="0.4"/>
+  <path d="M 635 228 Q 680 220 740 226 Q 800 232 845 226" stroke="#7b8b4a" stroke-width="1.2" fill="none" opacity="0.3"/>
+
+  <!-- Bottom gold border -->
+  <rect y="354" width="900" height="6" fill="#c8a046"/>
+</svg>
