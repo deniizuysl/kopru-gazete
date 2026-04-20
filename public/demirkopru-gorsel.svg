@@ -1,0 +1,135 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="480" viewBox="0 0 900 480">
+  <!-- Sky gradient background -->
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#87CEEB"/>
+      <stop offset="100%" stop-color="#B0E0FF"/>
+    </linearGradient>
+    <linearGradient id="water" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1a6fa3"/>
+      <stop offset="100%" stop-color="#0d4a72"/>
+    </linearGradient>
+    <linearGradient id="dam" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#8B7355"/>
+      <stop offset="100%" stop-color="#5C4A2A"/>
+    </linearGradient>
+    <linearGradient id="hill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#7b8b4a"/>
+      <stop offset="100%" stop-color="#4a5c2a"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Sky -->
+  <rect width="900" height="480" fill="url(#sky)"/>
+
+  <!-- Sun -->
+  <circle cx="720" cy="90" r="55" fill="#FFD700" opacity="0.9"/>
+  <circle cx="720" cy="90" r="45" fill="#FFEE44"/>
+
+  <!-- Sun rays -->
+  <line x1="720" y1="20" x2="720" y2="5" stroke="#FFD700" stroke-width="3" opacity="0.6"/>
+  <line x1="720" y1="160" x2="720" y2="175" stroke="#FFD700" stroke-width="3" opacity="0.6"/>
+  <line x1="650" y1="90" x2="635" y2="90" stroke="#FFD700" stroke-width="3" opacity="0.6"/>
+  <line x1="790" y1="90" x2="805" y2="90" stroke="#FFD700" stroke-width="3" opacity="0.6"/>
+  <line x1="670" y1="40" x2="660" y2="30" stroke="#FFD700" stroke-width="2" opacity="0.5"/>
+  <line x1="770" y1="40" x2="780" y2="30" stroke="#FFD700" stroke-width="2" opacity="0.5"/>
+  <line x1="670" y1="140" x2="660" y2="150" stroke="#FFD700" stroke-width="2" opacity="0.5"/>
+  <line x1="770" y1="140" x2="780" y2="150" stroke="#FFD700" stroke-width="2" opacity="0.5"/>
+
+  <!-- Clouds -->
+  <ellipse cx="150" cy="80" rx="70" ry="28" fill="white" opacity="0.85"/>
+  <ellipse cx="200" cy="68" rx="50" ry="24" fill="white" opacity="0.85"/>
+  <ellipse cx="100" cy="72" rx="45" ry="20" fill="white" opacity="0.85"/>
+
+  <ellipse cx="500" cy="60" rx="55" ry="22" fill="white" opacity="0.7"/>
+  <ellipse cx="545" cy="50" rx="38" ry="18" fill="white" opacity="0.7"/>
+
+  <!-- Hills left -->
+  <ellipse cx="0" cy="320" rx="200" ry="160" fill="url(#hill)"/>
+  <ellipse cx="160" cy="300" rx="180" ry="140" fill="#5a7a35"/>
+
+  <!-- Hills right -->
+  <ellipse cx="900" cy="300" rx="200" ry="160" fill="url(#hill)"/>
+  <ellipse cx="760" cy="280" rx="170" ry="130" fill="#5a7a35"/>
+
+  <!-- Dam body -->
+  <polygon points="280,180 620,180 660,380 240,380" fill="url(#dam)"/>
+  <!-- Dam texture lines -->
+  <line x1="283" y1="200" x2="617" y2="200" stroke="#6b5535" stroke-width="1.5" opacity="0.5"/>
+  <line x1="287" y1="220" x2="613" y2="220" stroke="#6b5535" stroke-width="1.5" opacity="0.5"/>
+  <line x1="291" y1="240" x2="609" y2="240" stroke="#6b5535" stroke-width="1.5" opacity="0.5"/>
+  <line x1="296" y1="260" x2="604" y2="260" stroke="#6b5535" stroke-width="1.5" opacity="0.5"/>
+  <line x1="302" y1="280" x2="598" y2="280" stroke="#6b5535" stroke-width="1.5" opacity="0.5"/>
+  <line x1="310" y1="300" x2="590" y2="300" stroke="#6b5535" stroke-width="1.5" opacity="0.5"/>
+  <line x1="320" y1="320" x2="580" y2="320" stroke="#6b5535" stroke-width="1.5" opacity="0.5"/>
+  <line x1="332" y1="340" x2="568" y2="340" stroke="#6b5535" stroke-width="1.5" opacity="0.5"/>
+  <line x1="346" y1="360" x2="554" y2="360" stroke="#6b5535" stroke-width="1.5" opacity="0.5"/>
+
+  <!-- Water behind dam (reservoir) -->
+  <path d="M 280 180 Q 450 160 620 180 L 620 185 Q 450 168 280 185 Z" fill="url(#water)" opacity="0.95"/>
+  <!-- Water level indicator area -->
+  <rect x="40" y="185" width="240" height="195" fill="url(#water)" opacity="0.9"/>
+  <rect x="620" y="185" width="240" height="195" fill="url(#water)" opacity="0.9"/>
+
+  <!-- Water surface shimmer -->
+  <path d="M 40 190 Q 150 185 240 190 Q 340 195 450 188 Q 560 182 660 190 Q 760 196 860 190" stroke="white" stroke-width="2" fill="none" opacity="0.5"/>
+  <path d="M 40 200 Q 180 194 300 200 Q 420 205 540 198 Q 660 192 860 200" stroke="white" stroke-width="1.5" fill="none" opacity="0.35"/>
+
+  <!-- Fish in water -->
+  <!-- Fish 1 -->
+  <ellipse cx="120" cy="260" rx="28" ry="12" fill="#c8a046"/>
+  <polygon points="92,260 68,245 68,275" fill="#c8a046"/>
+  <circle cx="132" cy="255" r="3" fill="#2f4f4f"/>
+  <path d="M 95 256 Q 105 252 115 256" stroke="#2f4f4f" stroke-width="1.5" fill="none"/>
+
+  <!-- Fish 2 -->
+  <ellipse cx="780" cy="250" rx="22" ry="9" fill="#7b8b4a"/>
+  <polygon points="758,250 738,240 738,260" fill="#7b8b4a"/>
+  <circle cx="790" cy="246" r="2.5" fill="#2f4f4f"/>
+
+  <!-- Fish 3 (small) -->
+  <ellipse cx="400" cy="350" rx="16" ry="7" fill="#c8a046" opacity="0.7"/>
+  <polygon points="384,350 368,343 368,357" fill="#c8a046" opacity="0.7"/>
+
+  <!-- Doluluk gauge on dam -->
+  <rect x="830" y="160" width="30" height="220" rx="4" fill="#333" opacity="0.7"/>
+  <rect x="832" y="162" width="26" height="216" rx="3" fill="#1a1a1a" opacity="0.8"/>
+  <!-- Fill level ~80% -->
+  <rect x="832" y="205" width="26" height="173" rx="3" fill="#1a6fa3"/>
+  <!-- Tick marks -->
+  <line x1="860" y1="162" x2="870" y2="162" stroke="white" stroke-width="1.5"/>
+  <line x1="860" y1="216" x2="870" y2="216" stroke="white" stroke-width="1.5"/>
+  <line x1="860" y1="270" x2="870" y2="270" stroke="white" stroke-width="1.5"/>
+  <line x1="860" y1="324" x2="870" y2="324" stroke="white" stroke-width="1.5"/>
+  <line x1="860" y1="378" x2="870" y2="378" stroke="white" stroke-width="1.5"/>
+  <text x="874" y="166" font-family="Arial" font-size="10" fill="white">100%</text>
+  <text x="874" y="220" font-family="Arial" font-size="10" fill="white">75%</text>
+  <text x="874" y="274" font-family="Arial" font-size="10" fill="white">50%</text>
+  <text x="874" y="328" font-family="Arial" font-size="10" fill="white">25%</text>
+  <text x="874" y="382" font-family="Arial" font-size="10" fill="white">0%</text>
+  <!-- Current level arrow -->
+  <polygon points="826,210 812,204 812,216" fill="#c8a046"/>
+  <text x="874" y="212" font-family="Arial" font-size="11" font-weight="bold" fill="#c8a046">~80%</text>
+
+  <!-- Water surface (foreground) -->
+  <rect x="0" y="380" width="900" height="100" fill="url(#water)"/>
+  <path d="M 0 380 Q 100 374 200 380 Q 300 386 400 378 Q 500 370 600 378 Q 700 385 800 378 Q 850 374 900 380" fill="#1a6fa3" opacity="0.6"/>
+
+  <!-- Ground -->
+  <rect x="0" y="420" width="900" height="60" fill="#4a3520"/>
+  <rect x="0" y="415" width="900" height="12" fill="#5a7a35"/>
+
+  <!-- Overlay dark banner bottom -->
+  <rect x="0" y="400" width="900" height="80" fill="#2f4f4f" opacity="0.88"/>
+
+  <!-- Text on banner -->
+  <text x="450" y="432" font-family="Georgia, serif" font-size="20" font-weight="bold"
+        fill="#c8a046" text-anchor="middle" letter-spacing="1">DEMİRKÖPRÜ BARAJI DOLDU</text>
+  <text x="450" y="460" font-family="Georgia, serif" font-size="14"
+        fill="#faf7f0" text-anchor="middle" letter-spacing="1">Balıkçılar Yıllardır Beklediği Müjdeyi Aldı</text>
+
+  <!-- Top label -->
+  <rect x="0" y="0" width="900" height="36" fill="#2f4f4f" opacity="0.75"/>
+  <text x="20" y="24" font-family="Georgia, serif" font-size="13" fill="#c8a046" letter-spacing="2">KÖPRÜ GAZETESİ</text>
+  <text x="880" y="24" font-family="Georgia, serif" font-size="12" fill="#faf7f0" text-anchor="end">Nisan 2026</text>
+</svg>
