@@ -3,6 +3,7 @@ import { Geist } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import SessionProvider from "@/components/SessionProvider";
+import { Analytics } from "@vercel/analytics/react";
 
 const geist = Geist({
   variable: "--font-geist-sans",
@@ -30,6 +31,7 @@ export default function RootLayout({
             <p>© {new Date().getFullYear()} Köprübaşı Gazetesi — Tüm hakları saklıdır</p>
           </footer>
         </SessionProvider>
+        <Analytics />
       </body>
     </html>
   );
