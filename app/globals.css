@@ -1,14 +1,19 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f9fafb;
-  --foreground: #111827;
+  --background: #faf7f0;
+  --foreground: #1f2937;
+  --brand-dark: #2f4f4f;
+  --brand-gold: #c8a046;
+  --brand-cream: #faf7f0;
+  --brand-olive: #7b8b4a;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
+  --font-serif: var(--font-serif);
 }
 
 body {
@@ -16,9 +21,28 @@ body {
   color: var(--foreground);
 }
 
+.font-serif {
+  font-family: var(--font-serif), Georgia, "Times New Roman", serif;
+}
+
 .line-clamp-2 {
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ince köprü silueti, hero alanında dekoratif arkaplan olarak kullanılabilir */
+.kopru-pattern {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 40' fill='none' stroke='%23c8a046' stroke-opacity='0.18' stroke-width='1'><path d='M0 36 L200 36 M20 36 L20 26 M50 36 L50 20 M80 36 L80 14 M110 36 L110 14 M140 36 L140 20 M170 36 L170 26'/><path d='M0 36 Q100 4 200 36'/></svg>");
+  background-repeat: repeat-x;
+  background-position: bottom;
+  background-size: 200px 40px;
 }

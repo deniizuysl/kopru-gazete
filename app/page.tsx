@@ -1,31 +1,30 @@
 import { prisma } from "@/lib/prisma";
 import HaberKarti from "@/components/HaberKarti";
 import Link from "next/link";
-import { Kategori } from "@/app/generated/prisma/client";
-
-const KATEGORILER = [
-  { key: "TUMU", label: "Tümü" },
-  { key: "SPOR", label: "Spor" },
-  { key: "EKONOMI", label: "Ekonomi" },
-  { key: "KULTUR", label: "Kültür" },
-  { key: "EGITIM", label: "Eğitim" },
-  { key: "SAGLIK", label: "Sağlık" },
-  { key: "DUYURU", label: "Duyurular" },
-];
+import { Kategori, Prisma } from "@/app/generated/prisma/client";
 
 export default async function AnaSayfa({
   searchParams,
 }: {
-  searchParams: Promise<{ kategori?: string; sayfa?: string }>;
+  searchParams: Promise<{ kategori?: string; sayfa?: string; ara?: string }>;
 }) {
   const params = await searchParams;
   const kategori = params.kategori as Kategori | undefined;
+  const arama = params.ara?.trim();
   const sayfa = parseInt(params.sayfa || "1");
   const limit = 12;
 
-  const where = {
+  const where: Prisma.HaberWhereInput = {
     yayinlandiMi: true,
     ...(kategori ? { kategori } : {}),
+    ...(arama
+      ? {
+          OR: [
+            { baslik: { contains: arama, mode: "insensitive" } },
+            { icerik: { contains: arama, mode: "insensitive" } },
+          ],
+        }
+      : {}),
   };
 
   const [haberler, toplam] = await Promise.all([
@@ -52,45 +51,74 @@ export default async function AnaSayfa({
   ]);
 
   const toplamSayfa = Math.ceil(toplam / limit);
-  const aktifKategori = kategori ?? "TUMU";
+  const sayfaQuery = (n: number) => {
+    const qp = new URLSearchParams();
+    if (kategori) qp.set("kategori", kategori);
+    if (arama) qp.set("ara", arama);
+    qp.set("sayfa", String(n));
+    return `/?${qp.toString()}`;
+  };
+
+  const baslikMetni = arama
+    ? `"${arama}" için sonuçlar`
+    : kategori
+      ? null
+      : "Güncel Haberler";
 
   return (
     <main className="max-w-7xl mx-auto px-4 py-6">
-      <div className="flex flex-wrap gap-2 mb-6 border-b pb-4">
-        {KATEGORILER.map((kat) => (
-          <Link
-            key={kat.key}
-            href={kat.key === "TUMU" ? "/" : `/?kategori=${kat.key}`}
-            className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
-              aktifKategori === kat.key
-                ? "bg-[#2f4f4f] text-amber-500"
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-            }`}
-          >
-            {kat.label}
-          </Link>
-        ))}
-      </div>
+      {(baslikMetni || arama) && (
+        <div className="mb-6 flex items-end justify-between gap-3 flex-wrap">
+          <div>
+            {baslikMetni && (
+              <h1 className="font-serif text-2xl md:text-3xl font-bold text-[#2f4f4f]">
+                {baslikMetni}
+              </h1>
+            )}
+            {arama && (
+              <p className="text-sm text-gray-500 mt-1">
+                {toplam} haber bulundu
+              </p>
+            )}
+          </div>
+          {arama && (
+            <Link
+              href="/"
+              className="text-sm text-[#2f4f4f] hover:text-amber-600 underline underline-offset-4"
+            >
+              Aramayı temizle
+            </Link>
+          )}
+        </div>
+      )}
 
       {haberler.length === 0 ? (
-        <div className="text-center py-20 text-gray-500">
-          <p className="text-xl mb-2">Henüz haber yok</p>
-          <p className="text-sm">İlk haberi sen gönder!</p>
-          <Link
-            href="/haber-gonder"
-            className="mt-4 inline-block bg-amber-500 text-black font-semibold px-6 py-2 rounded hover:bg-amber-500 transition-colors"
-          >
-            Haber Gönder
-          </Link>
+        <div className="text-center py-20 text-gray-500 bg-white rounded-xl border border-dashed border-gray-300">
+          <p className="text-xl mb-2 font-serif text-[#2f4f4f]">
+            {arama ? "Sonuç bulunamadı" : "Henüz haber yok"}
+          </p>
+          <p className="text-sm mb-4">
+            {arama
+              ? "Farklı bir kelime dene ya da kategoriye göz at."
+              : "İlk haberi sen gönder!"}
+          </p>
+          {!arama && (
+            <Link
+              href="/haber-gonder"
+              className="inline-block bg-amber-500 text-[#2f4f4f] font-semibold px-6 py-2 rounded-full hover:bg-amber-400 transition-colors"
+            >
+              Haber Gönder
+            </Link>
+          )}
         </div>
       ) : (
         <>
-          {sayfa === 1 && haberler.length > 0 && (
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          {sayfa === 1 && !arama && haberler.length > 0 && (
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-8">
               <div className="lg:col-span-2">
                 <HaberKarti haber={haberler[0]} buyuk />
               </div>
-              <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-5">
                 {haberler.slice(1, 3).map((haber) => (
                   <HaberKarti key={haber.id} haber={haber} />
                 ))}
@@ -98,32 +126,40 @@ export default async function AnaSayfa({
             </div>
           )}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {haberler.slice(sayfa === 1 ? 3 : 0).map((haber) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {haberler.slice(sayfa === 1 && !arama ? 3 : 0).map((haber) => (
               <HaberKarti key={haber.id} haber={haber} />
             ))}
           </div>
 
           {toplamSayfa > 1 && (
-            <div className="flex justify-center items-center gap-2 mt-10">
-              {sayfa > 1 && (
+            <div className="flex justify-center items-center gap-3 mt-10">
+              {sayfa > 1 ? (
                 <Link
-                  href={`/?${kategori ? `kategori=${kategori}&` : ""}sayfa=${sayfa - 1}`}
-                  className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 text-sm"
+                  href={sayfaQuery(sayfa - 1)}
+                  className="px-4 py-2 bg-white border border-gray-200 rounded-full hover:border-[#2f4f4f] hover:text-[#2f4f4f] text-sm transition-colors"
                 >
                   ← Önceki
                 </Link>
+              ) : (
+                <span className="px-4 py-2 bg-gray-50 border border-gray-100 rounded-full text-sm text-gray-300">
+                  ← Önceki
+                </span>
               )}
-              <span className="text-sm text-gray-600">
+              <span className="text-sm text-gray-600 font-medium">
                 {sayfa} / {toplamSayfa}
               </span>
-              {sayfa < toplamSayfa && (
+              {sayfa < toplamSayfa ? (
                 <Link
-                  href={`/?${kategori ? `kategori=${kategori}&` : ""}sayfa=${sayfa + 1}`}
-                  className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 text-sm"
+                  href={sayfaQuery(sayfa + 1)}
+                  className="px-4 py-2 bg-white border border-gray-200 rounded-full hover:border-[#2f4f4f] hover:text-[#2f4f4f] text-sm transition-colors"
                 >
                   Sonraki →
                 </Link>
+              ) : (
+                <span className="px-4 py-2 bg-gray-50 border border-gray-100 rounded-full text-sm text-gray-300">
+                  Sonraki →
+                </span>
               )}
             </div>
           )}
