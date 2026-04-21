@@ -104,6 +104,68 @@ export function NewspaperIcon({ size = 14, className, ...rest }: IconProps) {
   );
 }
 
+export function SunIcon({ size = 14, className, ...rest }: IconProps) {
+  return (
+    <svg {...base(size, className)} {...rest}>
+      <circle cx="12" cy="12" r="4" />
+      <path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M5.6 18.4 7 17M17 7l1.4-1.4" />
+    </svg>
+  );
+}
+
+export function CloudIcon({ size = 14, className, ...rest }: IconProps) {
+  return (
+    <svg {...base(size, className)} {...rest}>
+      <path d="M7 18h10a4 4 0 0 0 .7-7.9 6 6 0 0 0-11.6 1.3A3.5 3.5 0 0 0 7 18z" />
+    </svg>
+  );
+}
+
+export function CloudSunIcon({ size = 14, className, ...rest }: IconProps) {
+  return (
+    <svg {...base(size, className)} {...rest}>
+      <circle cx="8" cy="8" r="3" />
+      <path d="M8 2v1.5M8 13.5V15M2 8h1.5M13.5 8H15M3.5 3.5l1 1M12.5 12.5l1 1M3.5 12.5l1-1M13 4l-1 1" />
+      <path d="M11 19h8a3 3 0 0 0 .5-6 5 5 0 0 0-9.5 1A2.8 2.8 0 0 0 11 19z" />
+    </svg>
+  );
+}
+
+export function RainIcon({ size = 14, className, ...rest }: IconProps) {
+  return (
+    <svg {...base(size, className)} {...rest}>
+      <path d="M7 14h10a4 4 0 0 0 .7-7.9 6 6 0 0 0-11.6 1.3A3.5 3.5 0 0 0 7 14z" />
+      <path d="M9 18l-1 3M13 18l-1 3M17 18l-1 3" />
+    </svg>
+  );
+}
+
+export function SnowIcon({ size = 14, className, ...rest }: IconProps) {
+  return (
+    <svg {...base(size, className)} {...rest}>
+      <path d="M7 14h10a4 4 0 0 0 .7-7.9 6 6 0 0 0-11.6 1.3A3.5 3.5 0 0 0 7 14z" />
+      <path d="M9 19l.01 0M13 20l.01 0M17 19l.01 0M9 22l.01 0M13 17l.01 0M17 22l.01 0" />
+    </svg>
+  );
+}
+
+export function ThunderIcon({ size = 14, className, ...rest }: IconProps) {
+  return (
+    <svg {...base(size, className)} {...rest}>
+      <path d="M7 14h10a4 4 0 0 0 .7-7.9 6 6 0 0 0-11.6 1.3A3.5 3.5 0 0 0 7 14z" />
+      <path d="M12 16l-2 4h3l-1 3" />
+    </svg>
+  );
+}
+
+export function FogIcon({ size = 14, className, ...rest }: IconProps) {
+  return (
+    <svg {...base(size, className)} {...rest}>
+      <path d="M4 10h14M6 14h12M5 18h14M8 6h8" />
+    </svg>
+  );
+}
+
 export function KopruIcon({
   size = 24,
   className,

@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import HaberKarti from "@/components/HaberKarti";
+import HavaDurumu from "@/components/HavaDurumu";
 import Link from "next/link";
+import { Suspense } from "react";
 import { Kategori, Prisma } from "@/app/generated/prisma/client";
 import { ArrowLeftIcon, ArrowRightIcon, NewspaperIcon } from "@/components/icons";
 
@@ -82,14 +84,21 @@ export default async function AnaSayfa({
               </p>
             )}
           </div>
-          {arama && (
-            <Link
-              href="/"
-              className="text-sm text-[#2f4f4f] hover:text-amber-600 underline underline-offset-4"
-            >
-              Aramayı temizle
-            </Link>
-          )}
+          <div className="flex items-center gap-3">
+            {arama && (
+              <Link
+                href="/"
+                className="text-sm text-[#2f4f4f] hover:text-amber-600 underline underline-offset-4"
+              >
+                Aramayı temizle
+              </Link>
+            )}
+            {!arama && (
+              <Suspense fallback={null}>
+                <HavaDurumu />
+              </Suspense>
+            )}
+          </div>
         </div>
       )}
 
