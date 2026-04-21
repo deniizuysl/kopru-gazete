@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { formatDistanceToNow } from "date-fns";
 import { tr } from "date-fns/locale";
+import { EyeIcon, ChatIcon } from "@/components/icons";
 
 interface AdminHaber {
   id: string;
@@ -165,8 +166,14 @@ export default function AdminPanel({ haberler: baslangicHaberler, yorumlar: basl
                 </Link>
                 <div className="flex flex-wrap gap-3 mt-1.5 text-xs text-gray-400">
                   <span>{haber.yazar?.name || "Bilinmiyor"}</span>
-                  <span>👁 {haber.goruntuSayisi}</span>
-                  <span>💬 {haber._count.yorumlar}</span>
+                  <span className="flex items-center gap-1">
+                    <EyeIcon size={12} />
+                    {haber.goruntuSayisi}
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <ChatIcon size={12} />
+                    {haber._count.yorumlar}
+                  </span>
                   <span>{formatDistanceToNow(new Date(haber.createdAt), { addSuffix: true, locale: tr })}</span>
                 </div>
               </div>

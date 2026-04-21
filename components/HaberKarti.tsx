@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { formatDistanceToNow } from "date-fns";
 import { tr } from "date-fns/locale";
+import { ChatIcon, CameraIcon } from "@/components/icons";
 
 interface HaberKartiProps {
   haber: {
@@ -62,8 +63,9 @@ export default function HaberKarti({ haber, buyuk = false }: HaberKartiProps) {
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
           {haber.fotografUrls && haber.fotografUrls.length > 1 && (
-            <span className="absolute top-3 right-3 bg-black/60 backdrop-blur text-white text-xs px-2.5 py-1 rounded-full">
-              +{haber.fotografUrls.length - 1} fotoğraf
+            <span className="absolute top-3 right-3 bg-black/60 backdrop-blur text-white text-xs px-2.5 py-1 rounded-full flex items-center gap-1.5">
+              <CameraIcon size={12} />
+              +{haber.fotografUrls.length - 1}
             </span>
           )}
           <div className="absolute inset-x-0 bottom-0 p-5 md:p-7">
@@ -79,7 +81,12 @@ export default function HaberKarti({ haber, buyuk = false }: HaberKartiProps) {
             <div className="flex items-center justify-between text-xs text-gray-300">
               <span className="font-medium">{yazarAdi}</span>
               <div className="flex items-center gap-3">
-                {haber._count && <span>💬 {haber._count.yorumlar}</span>}
+                {haber._count && (
+                  <span className="flex items-center gap-1.5">
+                    <ChatIcon size={13} />
+                    {haber._count.yorumlar}
+                  </span>
+                )}
                 <span>{tarih}</span>
               </div>
             </div>
@@ -105,7 +112,8 @@ export default function HaberKarti({ haber, buyuk = false }: HaberKartiProps) {
               {kategoriAd}
             </span>
             {haber.fotografUrls && haber.fotografUrls.length > 1 && (
-              <span className="absolute bottom-2 right-2 bg-black/60 text-white text-xs px-2 py-0.5 rounded-full">
+              <span className="absolute bottom-2 right-2 bg-black/60 text-white text-xs px-2 py-0.5 rounded-full flex items-center gap-1">
+                <CameraIcon size={11} />
                 +{haber.fotografUrls.length - 1}
               </span>
             )}
@@ -127,7 +135,12 @@ export default function HaberKarti({ haber, buyuk = false }: HaberKartiProps) {
           <div className="flex items-center justify-between text-xs text-gray-400 border-t border-gray-100 pt-2.5 mt-auto">
             <span className="truncate">{yazarAdi}</span>
             <div className="flex items-center gap-3 shrink-0">
-              {haber._count && <span>💬 {haber._count.yorumlar}</span>}
+              {haber._count && (
+                <span className="flex items-center gap-1">
+                  <ChatIcon size={12} />
+                  {haber._count.yorumlar}
+                </span>
+              )}
               <span>{tarih}</span>
             </div>
           </div>

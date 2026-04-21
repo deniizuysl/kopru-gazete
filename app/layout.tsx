@@ -5,6 +5,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import SessionProvider from "@/components/SessionProvider";
 import { Analytics } from "@vercel/analytics/react";
+import { KopruIcon } from "@/components/icons";
 
 const geist = Geist({
   variable: "--font-geist-sans",
@@ -51,21 +52,7 @@ export default function RootLayout({
             />
             <div className="max-w-7xl mx-auto px-4 py-8 flex flex-col md:flex-row items-center justify-between gap-4">
               <div className="flex items-center gap-3">
-                <svg viewBox="0 0 64 24" fill="none" className="w-10 h-4 text-amber-500" aria-hidden>
-                  <path
-                    d="M2 20 L62 20 M8 20 L8 14 M20 20 L20 10 M32 20 L32 6 M44 20 L44 10 M56 20 L56 14"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                  />
-                  <path
-                    d="M2 20 Q32 2 62 20"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    fill="none"
-                    strokeLinecap="round"
-                  />
-                </svg>
+                <KopruIcon size={18} className="text-amber-500" />
                 <span className="font-serif text-amber-500 text-lg font-bold tracking-wide">
                   KÖPRÜBAŞI GAZETESİ
                 </span>

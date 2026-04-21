@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import HaberKarti from "@/components/HaberKarti";
 import Link from "next/link";
 import { Kategori, Prisma } from "@/app/generated/prisma/client";
+import { ArrowLeftIcon, ArrowRightIcon, NewspaperIcon } from "@/components/icons";
 
 export default async function AnaSayfa({
   searchParams,
@@ -93,7 +94,10 @@ export default async function AnaSayfa({
       )}
 
       {haberler.length === 0 ? (
-        <div className="text-center py-20 text-gray-500 bg-white rounded-xl border border-dashed border-gray-300">
+        <div className="text-center py-16 text-gray-500 bg-white rounded-xl border border-dashed border-gray-300">
+          <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-[#2f4f4f]/5 flex items-center justify-center text-[#2f4f4f]">
+            <NewspaperIcon size={28} />
+          </div>
           <p className="text-xl mb-2 font-serif text-[#2f4f4f]">
             {arama ? "Sonuç bulunamadı" : "Henüz haber yok"}
           </p>
@@ -137,13 +141,15 @@ export default async function AnaSayfa({
               {sayfa > 1 ? (
                 <Link
                   href={sayfaQuery(sayfa - 1)}
-                  className="px-4 py-2 bg-white border border-gray-200 rounded-full hover:border-[#2f4f4f] hover:text-[#2f4f4f] text-sm transition-colors"
+                  className="flex items-center gap-1.5 px-4 py-2 bg-white border border-gray-200 rounded-full hover:border-[#2f4f4f] hover:text-[#2f4f4f] text-sm transition-colors"
                 >
-                  ← Önceki
+                  <ArrowLeftIcon size={14} />
+                  <span>Önceki</span>
                 </Link>
               ) : (
-                <span className="px-4 py-2 bg-gray-50 border border-gray-100 rounded-full text-sm text-gray-300">
-                  ← Önceki
+                <span className="flex items-center gap-1.5 px-4 py-2 bg-gray-50 border border-gray-100 rounded-full text-sm text-gray-300">
+                  <ArrowLeftIcon size={14} />
+                  <span>Önceki</span>
                 </span>
               )}
               <span className="text-sm text-gray-600 font-medium">
@@ -152,13 +158,15 @@ export default async function AnaSayfa({
               {sayfa < toplamSayfa ? (
                 <Link
                   href={sayfaQuery(sayfa + 1)}
-                  className="px-4 py-2 bg-white border border-gray-200 rounded-full hover:border-[#2f4f4f] hover:text-[#2f4f4f] text-sm transition-colors"
+                  className="flex items-center gap-1.5 px-4 py-2 bg-white border border-gray-200 rounded-full hover:border-[#2f4f4f] hover:text-[#2f4f4f] text-sm transition-colors"
                 >
-                  Sonraki →
+                  <span>Sonraki</span>
+                  <ArrowRightIcon size={14} />
                 </Link>
               ) : (
-                <span className="px-4 py-2 bg-gray-50 border border-gray-100 rounded-full text-sm text-gray-300">
-                  Sonraki →
+                <span className="flex items-center gap-1.5 px-4 py-2 bg-gray-50 border border-gray-100 rounded-full text-sm text-gray-300">
+                  <span>Sonraki</span>
+                  <ArrowRightIcon size={14} />
                 </span>
               )}
             </div>

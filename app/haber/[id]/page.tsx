@@ -4,6 +4,7 @@ import { formatDistanceToNow } from "date-fns";
 import { tr } from "date-fns/locale";
 import YorumBolumu from "@/components/YorumBolumu";
 import FotoGaleri from "@/components/FotoGaleri";
+import { PenIcon, ClockIcon, EyeIcon, ChatIcon } from "@/components/icons";
 
 const kategoriIsimler: Record<string, string> = {
   GENEL: "Genel",
@@ -64,11 +65,23 @@ export default async function HaberDetay({
           {haber.baslik}
         </h1>
 
-        <div className="flex items-center gap-4 text-sm text-gray-500 mb-6 pb-4 border-b">
-          <span>✍ {yazarAdi}</span>
-          <span>🕐 {tarih}</span>
-          <span>👁 {haber.goruntuSayisi} görüntülenme</span>
-          <span>💬 {haber.yorumlar.length} yorum</span>
+        <div className="flex items-center gap-4 flex-wrap text-sm text-gray-500 mb-6 pb-4 border-b border-gray-200">
+          <span className="flex items-center gap-1.5">
+            <PenIcon size={14} />
+            {yazarAdi}
+          </span>
+          <span className="flex items-center gap-1.5">
+            <ClockIcon size={14} />
+            {tarih}
+          </span>
+          <span className="flex items-center gap-1.5">
+            <EyeIcon size={14} />
+            {haber.goruntuSayisi} görüntülenme
+          </span>
+          <span className="flex items-center gap-1.5">
+            <ChatIcon size={14} />
+            {haber.yorumlar.length} yorum
+          </span>
         </div>
 
         {/* Fotoğraf galerisi */}

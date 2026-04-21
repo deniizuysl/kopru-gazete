@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { useEffect } from "react";
 import { useSession, signIn } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
+import { KopruIcon } from "@/components/icons";
 
 function MobilGirisIcerik() {
   const { data: session, status } = useSession();
@@ -43,9 +44,11 @@ function MobilGirisIcerik() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#2f4f4f]">
-      <div className="bg-white rounded-2xl p-8 w-full max-w-sm text-center">
-        <div className="text-6xl mb-4">📰</div>
-        <h1 className="text-xl font-bold text-gray-900 mb-2">Köprübaşı Gazetesi</h1>
+      <div className="bg-white rounded-2xl p-8 w-full max-w-sm text-center shadow-xl">
+        <div className="w-20 h-20 mx-auto mb-5 rounded-full bg-[#2f4f4f] flex items-center justify-center">
+          <KopruIcon size={28} className="text-amber-500" />
+        </div>
+        <h1 className="text-xl font-serif font-bold text-[#2f4f4f] mb-2">Köprübaşı Gazetesi</h1>
         <p className="text-gray-500 text-sm mb-6">Mobil uygulamaya giriş yapın</p>
         <button
           onClick={() => signIn("google", { callbackUrl: `/mobil-giris?redirect=${encodeURIComponent(redirect || "")}` })}

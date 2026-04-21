@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import { useEffect, useRef, useState } from "react";
+import { KopruIcon, SearchIcon, PlusIcon } from "@/components/icons";
 
 const KATEGORILER = [
   { key: "TUMU", label: "Ana Sayfa", href: "/" },
@@ -14,26 +15,6 @@ const KATEGORILER = [
   { key: "SAGLIK", label: "Sağlık", href: "/?kategori=SAGLIK" },
   { key: "DUYURU", label: "Duyurular", href: "/?kategori=DUYURU" },
 ];
-
-function KopruIkon({ className = "" }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 64 24" fill="none" className={className} aria-hidden>
-      <path
-        d="M2 20 L62 20 M8 20 L8 14 M20 20 L20 10 M32 20 L32 6 M44 20 L44 10 M56 20 L56 14"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-      />
-      <path
-        d="M2 20 Q32 2 62 20"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        fill="none"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
 
 export default function Navbar() {
   const { data: session } = useSession();
@@ -83,7 +64,7 @@ export default function Navbar() {
           </button>
 
           <Link href="/" className="flex items-center gap-2 shrink-0">
-            <KopruIkon className="w-8 h-3 text-amber-500" />
+            <KopruIcon size={14} className="text-amber-500" />
             <span className="font-serif font-bold text-amber-500 text-lg md:text-xl tracking-wide">
               KÖPRÜBAŞI
               <span className="hidden sm:inline"> GAZETESİ</span>
@@ -102,16 +83,10 @@ export default function Navbar() {
                 placeholder="Haberlerde ara..."
                 className="w-full bg-white/10 border border-white/20 focus:border-amber-500 focus:bg-white/15 rounded-full pl-9 pr-3 py-1.5 text-sm placeholder:text-gray-300 outline-none transition-colors"
               />
-              <svg
-                className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <circle cx="11" cy="11" r="7" />
-                <path d="m20 20-3.5-3.5" strokeLinecap="round" />
-              </svg>
+              <SearchIcon
+                size={16}
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-300"
+              />
             </div>
           </form>
 
@@ -120,9 +95,10 @@ export default function Navbar() {
               <>
                 <Link
                   href="/haber-gonder"
-                  className="bg-amber-500 hover:bg-amber-400 text-[#2f4f4f] font-semibold px-3 py-1.5 rounded-full transition-colors text-xs"
+                  className="bg-amber-500 hover:bg-amber-400 text-[#2f4f4f] font-semibold px-3 py-1.5 rounded-full transition-colors text-xs flex items-center gap-1"
                 >
-                  + Haber
+                  <PlusIcon size={14} />
+                  <span>Haber</span>
                 </Link>
                 <div className="relative" ref={profilRef}>
                   <button
@@ -193,16 +169,10 @@ export default function Navbar() {
               placeholder="Haberlerde ara..."
               className="w-full bg-white/10 border border-white/20 focus:border-amber-500 rounded-full pl-9 pr-3 py-1.5 text-sm placeholder:text-gray-300 outline-none"
             />
-            <svg
-              className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <circle cx="11" cy="11" r="7" />
-              <path d="m20 20-3.5-3.5" strokeLinecap="round" />
-            </svg>
+            <SearchIcon
+              size={16}
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-300"
+            />
           </div>
         </form>
       </div>
