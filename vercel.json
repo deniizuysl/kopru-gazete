@@ -10,7 +10,7 @@
     },
     {
       "path": "/api/cron/zamanli-push",
-      "schedule": "*/30 * * * *"
+      "schedule": "0 12 * * *"
     }
   ]
 }

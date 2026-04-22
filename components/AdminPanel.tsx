@@ -523,7 +523,7 @@ function ZamanlaDialog({
           className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 mb-2"
           required
         />
-        <p className="text-xs text-gray-400 mb-4">Bildirimler 30 dakikada bir kontrol edilir — birkaç dakika sapma olabilir.</p>
+        <p className="text-xs text-gray-400 mb-4">Zamanlanmış bildirimler günde 2 kez (08:00 ve 15:00) kontrol edilir. Daha hassas zamanlama için harici cron gerekir.</p>
         <div className="flex gap-2">
           <button type="button" onClick={onIptal} className="flex-1 border border-gray-300 text-gray-700 py-2 rounded text-sm font-medium hover:bg-gray-50">
             Vazgeç
