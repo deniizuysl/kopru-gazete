@@ -88,6 +88,7 @@ model Haber {
   yazar    User?   @relation(fields: [yazarId], references: [id], onDelete: SetNull)
   yorumlar           Yorum[]
   kaydedilenHaberler KaydedilenHaber[]
+  zamanliPushlar     ZamanliPush[]
 }
 
 model Yorum {
@@ -136,6 +137,21 @@ model Reklam {
   tiklamaUrl String?
   aktif      Boolean  @default(true)
   createdAt  DateTime @default(now())
+}
+
+model ZamanliPush {
+  id             String    @id @default(cuid())
+  haberId        String?
+  haber          Haber?    @relation(fields: [haberId], references: [id], onDelete: Cascade)
+  baslik         String
+  icerik         String
+  zamanlanan     DateTime
+  gonderildi     Boolean   @default(false)
+  gonderimTarihi DateTime?
+  olusturanId    String?
+  createdAt      DateTime  @default(now())
+
+  @@index([zamanlanan, gonderildi])
 }
 
 model KaydedilenHaber {

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { pushBildirimGonder } from "@/lib/push";
+import { zamanliPushlariIsle } from "@/lib/bildirim";
 
 // Her sabah kullanıcılara push — son yayınlanan haberi duyurur.
 // Manuel tetikleme: ?haberId=<id> ile belirli bir haberi push'lar. ?zorla=1 → 24 saat filtresini atlar.
@@ -60,10 +61,14 @@ export async function GET(req: NextRequest) {
 
   await pushBildirimGonder(tokenlar, baslik, icerik, haber.id);
 
+  // Yedek: zamanı gelmiş zamanlı push'ları da işle (cron zinciri kopsa bile günlük kapsama).
+  const zamanliSonuc = await zamanliPushlariIsle();
+
   return NextResponse.json({
     gonderildi: tokenlar.length,
     haberId: haber.id,
     haberBaslik: haber.baslik,
     yazar,
+    zamanliIslenen: zamanliSonuc.length,
   });
 }
