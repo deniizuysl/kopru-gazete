@@ -43,6 +43,8 @@ export async function POST(request: NextRequest) {
 
     // Moderasyon kontrolü
     const moderasyon = await icerikModere(aiSonuc.baslik, aiSonuc.icerik);
+    const spamMi = moderasyon.durum === "SPAM";
+    const incelemedeMi = moderasyon.durum === "INCELE";
 
     const haber = await (prisma as any).haber.create({
       data: {
@@ -55,16 +57,29 @@ export async function POST(request: NextRequest) {
         anonim,
         yazarAdi: anonim ? null : kullanici.name,
         yazarId: anonim ? null : kullanici.id,
-        spam: moderasyon.spam,
-        spamNedeni: moderasyon.spam ? moderasyon.neden : null,
-        yayinlandiMi: !moderasyon.spam,
+        spam: spamMi,
+        spamNedeni: spamMi ? moderasyon.neden : null,
+        onayBekliyor: incelemedeMi,
+        incelemeNedeni: incelemedeMi ? moderasyon.neden : null,
+        yayinlandiMi: moderasyon.durum === "TEMIZ",
       },
     });
 
-    if (moderasyon.spam) {
+    if (spamMi) {
       return NextResponse.json(
-        { error: "İçeriğiniz incelemeye alındı.", spam: true },
+        { error: "İçeriğiniz kurallara uygun bulunmadı.", spam: true },
         { status: 422 }
+      );
+    }
+
+    if (incelemedeMi) {
+      return NextResponse.json(
+        {
+          ...haber,
+          mesaj: "Haberiniz editör onayına gönderildi, onaylandıktan sonra yayına çıkacak.",
+          onayBekliyor: true,
+        },
+        { status: 202 }
       );
     }
 

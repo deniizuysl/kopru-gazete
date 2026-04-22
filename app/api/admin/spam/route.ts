@@ -8,19 +8,30 @@ async function adminKontrol(req: NextRequest) {
   return k;
 }
 
-// Spam haberleri listele
+// Spam veya incelemedeki haberleri listele. ?durum=spam | incele (default: spam)
 export async function GET(req: NextRequest) {
   if (!await adminKontrol(req)) return NextResponse.json({ error: "Yetkisiz" }, { status: 401 });
 
+  const durum = new URL(req.url).searchParams.get("durum") || "spam";
+  const where = durum === "incele"
+    ? { onayBekliyor: true, spam: false }
+    : { spam: true };
+
   const haberler = await (prisma as any).haber.findMany({
-    where: { spam: true },
+    where,
     orderBy: { createdAt: "desc" },
     take: 50,
     select: {
       id: true,
       baslik: true,
       hamIcerik: true,
+      icerik: true,
       spamNedeni: true,
+      incelemeNedeni: true,
+      onayBekliyor: true,
+      spam: true,
+      fotografUrls: true,
+      kategori: true,
       createdAt: true,
       anonim: true,
       yazar: { select: { name: true, email: true } },
@@ -30,7 +41,7 @@ export async function GET(req: NextRequest) {
   return NextResponse.json(haberler);
 }
 
-// Spam'den kurtar (yayınla) veya kalıcı sil
+// islem: "yayinla" (onayla/spam'den kurtar) | "spam" (incelemedekini spam'e taşı) | "sil"
 export async function PATCH(req: NextRequest) {
   if (!await adminKontrol(req)) return NextResponse.json({ error: "Yetkisiz" }, { status: 401 });
 
@@ -40,7 +51,23 @@ export async function PATCH(req: NextRequest) {
   if (islem === "yayinla") {
     await (prisma as any).haber.update({
       where: { id },
-      data: { spam: false, spamNedeni: null, yayinlandiMi: true },
+      data: {
+        spam: false,
+        spamNedeni: null,
+        onayBekliyor: false,
+        incelemeNedeni: null,
+        yayinlandiMi: true,
+      },
+    });
+  } else if (islem === "spam") {
+    await (prisma as any).haber.update({
+      where: { id },
+      data: {
+        spam: true,
+        onayBekliyor: false,
+        incelemeNedeni: null,
+        yayinlandiMi: false,
+      },
     });
   } else if (islem === "sil") {
     await prisma.haber.delete({ where: { id } });

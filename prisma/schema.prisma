@@ -78,6 +78,8 @@ model Haber {
   yayinlandiMi  Boolean  @default(true)
   spam          Boolean  @default(false)
   spamNedeni    String?
+  onayBekliyor  Boolean  @default(false)
+  incelemeNedeni String?
   goruntuSayisi Int      @default(0)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
