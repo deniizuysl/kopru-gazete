@@ -33,4 +33,19 @@ export async function deleteImage(publicId: string): Promise<void> {
   await cloudinary.uploader.destroy(publicId);
 }
 
+// URL'den doğrudan Cloudinary'ye yükler. Haber ajanı RSS'ten bulduğu görseli kendi CDN'imize taşımak için kullanır.
+export async function uploadImageFromUrl(url: string): Promise<string | null> {
+  try {
+    const result = await cloudinary.uploader.upload(url, {
+      folder: "koprubaşı-gazete/ajan",
+      public_id: `ajan_${Date.now()}`,
+      transformation: [{ width: 1200, height: 800, crop: "limit" }],
+      timeout: 15000,
+    });
+    return result.secure_url;
+  } catch {
+    return null;
+  }
+}
+
 export default cloudinary;

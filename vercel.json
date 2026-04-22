@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/haber-ajani",
+      "schedule": "0 9 * * *"
+    }
+  ]
+}

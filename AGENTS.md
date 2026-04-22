@@ -29,6 +29,15 @@ GENEL `#2f4f4f` · SPOR `#7b8b4a` · KULTUR `#c8a046` · EKONOMI `#2f4f4f` · EG
 - Server component + `next: { revalidate: 600 }` → 10dk ISR.
 - `<Suspense fallback={null}>` ile sarılmalı (ana sayfa başlık satırında).
 
+## Haber Ajanı (`lib/haber-ajani.ts`)
+- RSS kaynaklarından (`lib/rss-kaynaklari.ts`) Manisa/Köprübaşı içerik çeker, `haberYaz` ile yeniden yazar, `onayBekliyor: true` + `yayinlandiMi: false` ile kaydeder.
+- Türkiye özel günleri `lib/ozel-gunler.ts`'de (Ramazan/Kurban Bayramı tarihleri her yıl güncellenmeli).
+- Cron: `vercel.json` → `/api/cron/haber-ajani` günlük 09:00 UTC. Pzt ve Per atlanır → haftada ~5 haber.
+- `CRON_SECRET` env zorunlu. Manuel test: `GET /api/cron/haber-ajani?zorla=1` (atlamayı bypass eder).
+- Görseller RSS enclosure > media:content > description img > og:image sırasıyla alınır, Cloudinary'ye `ajan/` klasörüne kopyalanır. Bulunamazsa foto'suz yayınlanır.
+- Üretim tamamlanınca tüm `ADMIN` kullanıcılara push gider (`pushAdminOnayBildirimi`).
+- Ajan haberi işareti: `hamIcerik` `[AJAN-KAYNAK]` veya `[AJAN-OZEL:...]` ile başlar. Dedupe link bazlıdır.
+
 ## Dikkat
 - `useSearchParams` kullanan componentler Suspense sınırı ister (Next.js 16).
 - Namaz vakti widget'ı istenmedi — ekleme.
