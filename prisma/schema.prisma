@@ -73,6 +73,7 @@ model Haber {
   fotografUrls  String[]
   fotografAlt   String?
   kategori      Kategori @default(GENEL)
+  bolge         String?
   anonim        Boolean  @default(false)
   yazarAdi      String?
   yayinlandiMi  Boolean  @default(true)

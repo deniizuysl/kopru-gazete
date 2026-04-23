@@ -7,6 +7,7 @@ export interface HaberGirdisi {
   fotografAciklamasi?: string;
   yazarAdi?: string;
   anonim: boolean;
+  bolge?: string;
 }
 
 export interface HaberCiktisi {
@@ -25,11 +26,17 @@ export async function haberYaz(girdi: HaberGirdisi): Promise<HaberCiktisi> {
     ? "Haber anonim olarak gönderilmiştir."
     : `Haberi gönderen: ${girdi.yazarAdi || "Bilinmiyor"}`;
 
+  const bolgeBilgisi = girdi.bolge
+    ? girdi.bolge === "Merkez"
+      ? `\nOlayın geçtiği bölge: Köprübaşı ilçe merkezi. Haberde yer belirtirken "Köprübaşı ilçe merkezi" veya "Köprübaşı'nda" gibi ifadeler kullanabilirsin.`
+      : `\nOlayın geçtiği bölge: ${girdi.bolge} (Manisa'nın Köprübaşı ilçesine bağlı). Haberde mutlaka bu bölge adına yer ver; örneğin "Köprübaşı'nın ${girdi.bolge} köyünde/mahallesinde" gibi ifadelerle konumu netleştir.`
+    : "";
+
   const prompt = `Sen Köprübaşı Gazetesi'nin editörüsün. Köprübaşı, Manisa iline bağlı bir ilçedir. Tüm haberler Manisa'nın Köprübaşı ilçesinden ve çevresinden gelir. Bunu her zaman göz önünde bulundur; haberlerde yer belirtmek gerektiğinde "Manisa'nın Köprübaşı ilçesi" ifadesini kullan. Sana gelen ham haber içeriğini profesyonel bir gazete haberi formatına dönüştür.
 
 Ham haber içeriği:
 ${girdi.hamMetin}
-${fotografBilgisi}
+${fotografBilgisi}${bolgeBilgisi}
 
 ${yazarBilgisi}
 

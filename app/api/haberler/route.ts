@@ -5,12 +5,14 @@ import { haberYaz } from "@/lib/claude";
 import { pushBildirimGonder } from "@/lib/push";
 import { z } from "zod";
 import { Kategori } from "@/app/generated/prisma/client";
+import { BOLGELER } from "@/lib/bolgeler";
 
 const haberSchema = z.object({
   hamIcerik: z.string().min(20, "Haber içeriği en az 20 karakter olmalı"),
   fotografUrls: z.array(z.string().url()).optional().default([]),
   anonim: z.boolean().default(false),
   yazarAdi: z.string().optional(),
+  bolge: z.enum(BOLGELER).optional(),
 });
 
 export async function GET(request: NextRequest) {
@@ -58,12 +60,13 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { hamIcerik, fotografUrls, anonim, yazarAdi } = haberSchema.parse(body);
+    const { hamIcerik, fotografUrls, anonim, yazarAdi, bolge } = haberSchema.parse(body);
 
     const aiSonuc = await haberYaz({
       hamMetin: hamIcerik,
       anonim,
       yazarAdi: anonim ? undefined : (yazarAdi || session.user.name || undefined),
+      bolge,
     });
 
     const haber = await prisma.haber.create({
@@ -74,6 +77,7 @@ export async function POST(request: NextRequest) {
         fotografUrls: fotografUrls || [],
         fotografAlt: aiSonuc.fotografAlt || null,
         kategori: (aiSonuc.kategori as Kategori) || Kategori.GENEL,
+        bolge: bolge || null,
         anonim,
         yazarAdi: anonim ? null : (yazarAdi || session.user.name || null),
         yazarId: anonim ? null : session.user.id,

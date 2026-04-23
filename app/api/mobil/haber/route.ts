@@ -5,6 +5,7 @@ import { haberYaz } from "@/lib/claude";
 import { uploadImage } from "@/lib/cloudinary";
 import { icerikModere } from "@/lib/moderasyon";
 import { Kategori } from "@/app/generated/prisma/client";
+import { bolgeGecerliMi } from "@/lib/bolgeler";
 
 export async function POST(request: NextRequest) {
   const kullanici = await mobilTokenDogrula(request.headers.get("authorization"));
@@ -18,6 +19,8 @@ export async function POST(request: NextRequest) {
     const kategori = (formData.get("kategori") as string) || "GENEL";
     const anonim = formData.get("anonim") === "true";
     const fotograflar = formData.getAll("fotograflar") as File[];
+    const bolgeRaw = formData.get("bolge");
+    const bolge = bolgeGecerliMi(bolgeRaw) ? bolgeRaw : null;
 
     if (!icerik || icerik.trim().length < 20) {
       return NextResponse.json({ error: "İçerik en az 20 karakter olmalı" }, { status: 400 });
@@ -39,6 +42,7 @@ export async function POST(request: NextRequest) {
       hamMetin: icerik.trim(),
       anonim,
       yazarAdi: anonim ? undefined : kullanici.name,
+      bolge: bolge || undefined,
     });
 
     // Moderasyon kontrolü
@@ -54,6 +58,7 @@ export async function POST(request: NextRequest) {
         fotografUrls,
         fotografAlt: aiSonuc.fotografAlt || null,
         kategori: (kategori as Kategori) || Kategori.GENEL,
+        bolge,
         anonim,
         yazarAdi: anonim ? null : kullanici.name,
         yazarId: anonim ? null : kullanici.id,
