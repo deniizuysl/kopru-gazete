@@ -177,6 +177,31 @@ model Etkinlik {
   createdAt DateTime @default(now())
 }
 
+model Vefat {
+  id           String   @id @default(cuid())
+  ad           String
+  yakinlari    String?
+  vefatTarihi  DateTime
+  cenazeTarihi DateTime
+  cenazeYeri   String
+  bolge        String?
+  fotograf     String?
+  ilaveBilgi   String?  @db.Text
+  createdAt    DateTime @default(now())
+
+  @@index([cenazeTarihi])
+}
+
+model Eczane {
+  id             String    @id @default(cuid())
+  ad             String
+  telefon        String?
+  adres          String?
+  nobetBaslangic DateTime?
+  nobetBitis     DateTime?
+  createdAt      DateTime  @default(now())
+}
+
 model Anket {
   id        String          @id @default(cuid())
   soru      String
