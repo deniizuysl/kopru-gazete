@@ -45,7 +45,7 @@ Lütfen aşağıdaki JSON formatında yanıt ver:
   "baslik": "Haber başlığı (dikkat çekici, kısa ve öz, 60 karakteri geçmesin)",
   "icerik": "Tam haber metni (paragraflar halinde, gazetecilik kurallarına uygun, 5W1H prensibi: Kim, Ne, Nerede, Ne Zaman, Neden, Nasıl)",
   "fotografAlt": "Fotoğraf varsa açıklayıcı alt metin",
-  "kategori": "GENEL | SPOR | KULTUR | EKONOMI | EGITIM | SAGLIK | DUYURU"
+  "kategori": "GENEL | SPOR | KULTUR | EKONOMI | EGITIM | SAGLIK | DUYURU | YASAM | MANISA | TARIM"
 }
 
 Önemli kurallar:

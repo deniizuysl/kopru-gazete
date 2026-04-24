@@ -3,7 +3,7 @@ import Anthropic from "@anthropic-ai/sdk";
 
 const client = new Anthropic();
 
-const KATEGORILER = ["GENEL", "SPOR", "KULTUR", "EKONOMI", "EGITIM", "SAGLIK", "DUYURU"];
+const KATEGORILER = ["GENEL", "SPOR", "KULTUR", "EKONOMI", "EGITIM", "SAGLIK", "DUYURU", "YASAM", "MANISA", "TARIM"];
 
 export async function POST(req: NextRequest) {
   try {

@@ -14,6 +14,9 @@ const KATEGORILER = [
   { key: "EGITIM", label: "Eğitim", href: "/?kategori=EGITIM" },
   { key: "SAGLIK", label: "Sağlık", href: "/?kategori=SAGLIK" },
   { key: "DUYURU", label: "Duyurular", href: "/?kategori=DUYURU" },
+  { key: "YASAM", label: "Yaşam", href: "/?kategori=YASAM" },
+  { key: "MANISA", label: "Manisa", href: "/?kategori=MANISA" },
+  { key: "TARIM", label: "Tarım", href: "/?kategori=TARIM" },
 ];
 
 export default function Navbar() {

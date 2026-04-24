@@ -64,6 +64,8 @@ export default async function AdminPage() {
         reklamlar={reklamlar.map((r) => ({
           ...r,
           createdAt: r.createdAt.toISOString(),
+          baslangic: r.baslangic ? r.baslangic.toISOString() : null,
+          bitis: r.bitis ? r.bitis.toISOString() : null,
         }))}
       />
     </main>

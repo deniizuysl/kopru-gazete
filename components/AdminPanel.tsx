@@ -37,6 +37,16 @@ interface Reklam {
   tiklamaUrl?: string | null;
   aktif: boolean;
   createdAt: string;
+  isletmeAdi?: string | null;
+  iletisimAd?: string | null;
+  telefon?: string | null;
+  aciklama?: string | null;
+  sureGun?: number | null;
+  baslangic?: string | null;
+  bitis?: string | null;
+  durum?: "BEKLEMEDE" | "ONAYLANDI" | "REDDEDILDI" | "SURESI_DOLDU";
+  odendi?: boolean;
+  adminNotu?: string | null;
 }
 
 interface AdminPanelProps {
@@ -383,25 +393,23 @@ export default function AdminPanel({ haberler: baslangicHaberler, yorumlar: basl
             </div>
           </form>
 
-          {/* Mevcut Reklamlar */}
-          <div className="space-y-3">
-            {reklamlar.map((reklam) => (
-              <div key={reklam.id} className="bg-white border rounded-lg p-4 flex items-center gap-4">
-                <div className="relative w-20 h-14 rounded overflow-hidden flex-shrink-0">
-                  <Image src={reklam.resimUrl} alt={reklam.baslik} fill className="object-cover" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-medium text-sm text-gray-900">{reklam.baslik}</p>
-                  {reklam.tiklamaUrl && <p className="text-xs text-gray-400 truncate">{reklam.tiklamaUrl}</p>}
-                  <p className="text-xs text-gray-400">{formatDistanceToNow(new Date(reklam.createdAt), { addSuffix: true, locale: tr })}</p>
-                </div>
-                <button onClick={() => reklamSil(reklam.id)} disabled={siliniyor === reklam.id} className="text-red-500 hover:text-red-700 text-xs font-medium px-3 py-1.5 border border-red-200 rounded hover:bg-red-50 disabled:opacity-50 transition-colors whitespace-nowrap">
-                  {siliniyor === reklam.id ? "Siliniyor..." : "Sil"}
-                </button>
-              </div>
-            ))}
-            {reklamlar.length === 0 && <p className="text-gray-500 text-sm text-center py-8">Henüz reklam eklenmedi</p>}
-          </div>
+          {/* Reklamlar */}
+          <ReklamListesi
+            reklamlar={reklamlar}
+            siliniyor={siliniyor}
+            onSil={reklamSil}
+            onGuncelle={async (id, payload) => {
+              const res = await fetch("/api/admin/reklamlar", {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ id, ...payload }),
+              });
+              if (res.ok) {
+                const guncel = await res.json();
+                setReklamlar(reklamlar.map((r) => (r.id === id ? { ...r, ...guncel, createdAt: r.createdAt } : r)));
+              }
+            }}
+          />
         </div>
       )}
 
@@ -533,6 +541,134 @@ function ZamanlaDialog({
           </button>
         </div>
       </form>
+    </div>
+  );
+}
+
+const DURUM_ETIKET: Record<string, { label: string; cls: string }> = {
+  BEKLEMEDE: { label: "Beklemede", cls: "bg-amber-100 text-amber-800" },
+  ONAYLANDI: { label: "Onaylandı", cls: "bg-green-100 text-green-800" },
+  REDDEDILDI: { label: "Reddedildi", cls: "bg-red-100 text-red-700" },
+  SURESI_DOLDU: { label: "Süresi doldu", cls: "bg-gray-100 text-gray-600" },
+};
+
+interface ReklamListesiProps {
+  reklamlar: Reklam[];
+  siliniyor: string | null;
+  onSil: (id: string) => void;
+  onGuncelle: (id: string, payload: Record<string, unknown>) => Promise<void>;
+}
+
+function ReklamListesi({ reklamlar, siliniyor, onSil, onGuncelle }: ReklamListesiProps) {
+  const [acikId, setAcikId] = useState<string | null>(null);
+  const [sureSec, setSureSec] = useState<Record<string, number>>({});
+  const [islem, setIslem] = useState<string | null>(null);
+
+  const bekleyenler = reklamlar.filter((r) => r.durum === "BEKLEMEDE");
+  const digerleri = reklamlar.filter((r) => r.durum !== "BEKLEMEDE");
+
+  async function onayla(r: Reklam) {
+    setIslem(r.id);
+    const sure = sureSec[r.id] ?? r.sureGun ?? 30;
+    await onGuncelle(r.id, { durum: "ONAYLANDI", sureGun: sure, odendi: true });
+    setIslem(null);
+    setAcikId(null);
+  }
+  async function reddet(r: Reklam) {
+    if (!confirm("Başvuru reddedilsin mi?")) return;
+    setIslem(r.id);
+    await onGuncelle(r.id, { durum: "REDDEDILDI" });
+    setIslem(null);
+  }
+
+  function ReklamKart({ r, bekleyen }: { r: Reklam; bekleyen: boolean }) {
+    const acik = acikId === r.id;
+    const durum = r.durum || "ONAYLANDI";
+    const etiket = DURUM_ETIKET[durum];
+    const bitisGosterilebilir = r.bitis && new Date(r.bitis) > new Date();
+    return (
+      <div className={`bg-white border rounded-lg ${bekleyen ? "border-amber-300" : ""}`}>
+        <div className="p-4 flex items-center gap-4">
+          <div className="relative w-20 h-14 rounded overflow-hidden flex-shrink-0">
+            <Image src={r.resimUrl} alt={r.baslik} fill className="object-cover" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-1">
+              <p className="font-medium text-sm text-gray-900 truncate">{r.baslik}</p>
+              <span className={`text-[10px] font-semibold px-2 py-0.5 rounded ${etiket.cls}`}>{etiket.label}</span>
+              {r.odendi && <span className="text-[10px] font-semibold px-2 py-0.5 rounded bg-blue-100 text-blue-700">Ödendi</span>}
+            </div>
+            {r.isletmeAdi && <p className="text-xs text-gray-600">{r.isletmeAdi}{r.iletisimAd ? ` · ${r.iletisimAd}` : ""}</p>}
+            {bitisGosterilebilir && <p className="text-xs text-gray-400">Bitiş: {format(new Date(r.bitis!), "d MMM yyyy", { locale: tr })}</p>}
+            {!bitisGosterilebilir && <p className="text-xs text-gray-400">{formatDistanceToNow(new Date(r.createdAt), { addSuffix: true, locale: tr })}</p>}
+          </div>
+          <div className="flex gap-2">
+            {bekleyen && (
+              <button onClick={() => setAcikId(acik ? null : r.id)} className="text-amber-700 text-xs font-medium px-3 py-1.5 border border-amber-300 rounded hover:bg-amber-50">
+                {acik ? "Kapat" : "İncele"}
+              </button>
+            )}
+            <button onClick={() => onSil(r.id)} disabled={siliniyor === r.id} className="text-red-500 hover:text-red-700 text-xs font-medium px-3 py-1.5 border border-red-200 rounded hover:bg-red-50 disabled:opacity-50">
+              {siliniyor === r.id ? "..." : "Sil"}
+            </button>
+          </div>
+        </div>
+        {acik && bekleyen && (
+          <div className="border-t border-amber-200 bg-amber-50/50 px-4 py-3 space-y-2">
+            <div className="text-sm text-gray-800 space-y-1">
+              <p><span className="text-gray-500">İşletme:</span> {r.isletmeAdi}</p>
+              <p><span className="text-gray-500">İletişim:</span> {r.iletisimAd}</p>
+              <p>
+                <span className="text-gray-500">Telefon:</span>{" "}
+                <a href={`tel:${r.telefon}`} className="text-blue-600 underline">{r.telefon}</a>
+                {" · "}
+                <a href={`https://wa.me/${(r.telefon || "").replace(/\D/g, "")}`} target="_blank" rel="noopener" className="text-green-700 underline">WhatsApp</a>
+              </p>
+              <p><span className="text-gray-500">Talep süre:</span> {r.sureGun} gün</p>
+              {r.tiklamaUrl && <p><span className="text-gray-500">Link:</span> <a href={r.tiklamaUrl} target="_blank" rel="noopener" className="text-blue-600 underline truncate">{r.tiklamaUrl}</a></p>}
+              {r.aciklama && <p className="text-gray-700 whitespace-pre-line">{r.aciklama}</p>}
+            </div>
+            <div className="flex items-center gap-2 pt-2">
+              <label className="text-xs text-gray-600">Süre:</label>
+              <select
+                value={sureSec[r.id] ?? r.sureGun ?? 30}
+                onChange={(e) => setSureSec({ ...sureSec, [r.id]: Number(e.target.value) })}
+                className="border border-gray-300 rounded px-2 py-1 text-xs"
+              >
+                <option value={7}>7 gün</option>
+                <option value={30}>30 gün</option>
+                <option value={90}>90 gün</option>
+              </select>
+              <button onClick={() => onayla(r)} disabled={islem === r.id} className="ml-auto bg-green-600 text-white text-xs font-medium px-3 py-1.5 rounded hover:bg-green-700 disabled:opacity-50">
+                {islem === r.id ? "..." : "Ödeme alındı, yayınla"}
+              </button>
+              <button onClick={() => reddet(r)} disabled={islem === r.id} className="bg-red-50 text-red-700 text-xs font-medium px-3 py-1.5 rounded border border-red-200 hover:bg-red-100 disabled:opacity-50">
+                Reddet
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      {bekleyenler.length > 0 && (
+        <div>
+          <h4 className="text-sm font-semibold text-amber-800 mb-2">Bekleyen başvurular ({bekleyenler.length})</h4>
+          <div className="space-y-3">
+            {bekleyenler.map((r) => <ReklamKart key={r.id} r={r} bekleyen />)}
+          </div>
+        </div>
+      )}
+      <div>
+        {bekleyenler.length > 0 && <h4 className="text-sm font-semibold text-gray-700 mb-2">Diğer reklamlar</h4>}
+        <div className="space-y-3">
+          {digerleri.map((r) => <ReklamKart key={r.id} r={r} bekleyen={false} />)}
+        </div>
+        {reklamlar.length === 0 && <p className="text-gray-500 text-sm text-center py-8">Henüz reklam eklenmedi</p>}
+      </div>
     </div>
   );
 }

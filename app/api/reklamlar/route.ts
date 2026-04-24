@@ -12,9 +12,20 @@ async function adminKontrol(req: NextRequest) {
 }
 
 export async function GET() {
+  const simdi = new Date();
   const reklamlar = await prisma.reklam.findMany({
-    where: { aktif: true },
+    where: {
+      aktif: true,
+      durum: "ONAYLANDI",
+      OR: [{ bitis: null }, { bitis: { gt: simdi } }],
+    },
     orderBy: { createdAt: "desc" },
+    select: {
+      id: true,
+      baslik: true,
+      resimUrl: true,
+      tiklamaUrl: true,
+    },
   });
   return NextResponse.json(reklamlar);
 }

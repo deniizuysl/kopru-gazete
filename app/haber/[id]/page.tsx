@@ -14,6 +14,9 @@ const kategoriIsimler: Record<string, string> = {
   EGITIM: "Eğitim",
   SAGLIK: "Sağlık",
   DUYURU: "Duyuru",
+  YASAM: "Yaşam",
+  MANISA: "Manisa",
+  TARIM: "Tarım",
 };
 
 export default async function HaberDetay({

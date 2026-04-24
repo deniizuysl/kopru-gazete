@@ -29,6 +29,9 @@ const kategoriStil: Record<string, string> = {
   EGITIM: "bg-[#5a6b3d] text-white",
   SAGLIK: "bg-[#b37a2e] text-white",
   DUYURU: "bg-amber-500 text-[#2f4f4f]",
+  YASAM: "bg-[#a85a76] text-white",
+  MANISA: "bg-[#3d5a7b] text-white",
+  TARIM: "bg-[#6b8e23] text-white",
 };
 
 const kategoriIsimler: Record<string, string> = {
@@ -39,6 +42,9 @@ const kategoriIsimler: Record<string, string> = {
   EGITIM: "Eğitim",
   SAGLIK: "Sağlık",
   DUYURU: "Duyuru",
+  YASAM: "Yaşam",
+  MANISA: "Manisa",
+  TARIM: "Tarım",
 };
 
 export default function HaberKarti({ haber, buyuk = false }: HaberKartiProps) {

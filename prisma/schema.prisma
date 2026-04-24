@@ -132,12 +132,25 @@ model Bildirim {
 }
 
 model Reklam {
-  id         String   @id @default(cuid())
-  baslik     String
-  resimUrl   String
-  tiklamaUrl String?
-  aktif      Boolean  @default(true)
-  createdAt  DateTime @default(now())
+  id          String      @id @default(cuid())
+  baslik      String
+  resimUrl    String
+  tiklamaUrl  String?
+  aktif       Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+
+  isletmeAdi  String?
+  iletisimAd  String?
+  telefon     String?
+  aciklama    String?     @db.Text
+  sureGun     Int?
+  baslangic   DateTime?
+  bitis       DateTime?
+  durum       ReklamDurum @default(ONAYLANDI)
+  odendi      Boolean     @default(false)
+  adminNotu   String?     @db.Text
+
+  @@index([durum, aktif, bitis])
 }
 
 model ZamanliPush {
@@ -242,4 +255,14 @@ enum Kategori {
   EGITIM
   SAGLIK
   DUYURU
+  YASAM
+  MANISA
+  TARIM
+}
+
+enum ReklamDurum {
+  BEKLEMEDE
+  ONAYLANDI
+  REDDEDILDI
+  SURESI_DOLDU
 }
