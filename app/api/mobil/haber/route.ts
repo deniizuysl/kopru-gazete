@@ -18,12 +18,17 @@ export async function POST(request: NextRequest) {
     const icerik = formData.get("icerik") as string;
     const kategori = (formData.get("kategori") as string) || "GENEL";
     const anonim = formData.get("anonim") === "true";
+    const aiKullan = formData.get("aiKullan") !== "false";
+    const baslikOneri = ((formData.get("baslikOneri") as string) || "").trim();
     const fotograflar = formData.getAll("fotograflar") as File[];
     const bolgeRaw = formData.get("bolge");
     const bolge = bolgeGecerliMi(bolgeRaw) ? bolgeRaw : null;
 
     if (!icerik || icerik.trim().length < 20) {
       return NextResponse.json({ error: "İçerik en az 20 karakter olmalı" }, { status: 400 });
+    }
+    if (!aiKullan && baslikOneri.length < 5) {
+      return NextResponse.json({ error: "Yapay zeka kapalıyken başlık zorunludur" }, { status: 400 });
     }
 
     // Fotoğrafları Cloudinary'ye yükle
@@ -37,18 +42,21 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // AI ile haber oluştur
-    const aiSonuc = await haberYaz({
-      hamMetin: icerik.trim(),
-      anonim,
-      yazarAdi: anonim ? undefined : kullanici.name,
-      bolge: bolge || undefined,
-    });
+    // AI kullanılacaksa metni dönüştür, kullanılmayacaksa kullanıcının yazdığını koru
+    const aiSonuc = aiKullan
+      ? await haberYaz({
+          hamMetin: icerik.trim(),
+          anonim,
+          yazarAdi: anonim ? undefined : kullanici.name,
+          bolge: bolge || undefined,
+        })
+      : { baslik: baslikOneri, icerik: icerik.trim(), fotografAlt: null as string | null, kategori };
 
     // Moderasyon kontrolü
     const moderasyon = await icerikModere(aiSonuc.baslik, aiSonuc.icerik);
     const spamMi = moderasyon.durum === "SPAM";
-    const incelemedeMi = moderasyon.durum === "INCELE";
+    // AI kullanılmadıysa her zaman editör onayına gönder
+    const incelemedeMi = !aiKullan || moderasyon.durum === "INCELE";
 
     const haber = await (prisma as any).haber.create({
       data: {
@@ -65,8 +73,10 @@ export async function POST(request: NextRequest) {
         spam: spamMi,
         spamNedeni: spamMi ? moderasyon.neden : null,
         onayBekliyor: incelemedeMi,
-        incelemeNedeni: incelemedeMi ? moderasyon.neden : null,
-        yayinlandiMi: moderasyon.durum === "TEMIZ",
+        incelemeNedeni: incelemedeMi
+          ? (moderasyon.durum === "INCELE" ? moderasyon.neden : "Yapay zeka kullanılmadan gönderildi")
+          : null,
+        yayinlandiMi: !spamMi && !incelemedeMi,
       },
     });
 
