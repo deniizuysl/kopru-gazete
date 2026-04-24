@@ -17,7 +17,7 @@ export async function pushBildirimGonder(tokens: string[], baslik: string, iceri
 // Admin'lere onay bekleyen haber bildirimi. data.tip: "onay" → mobil tarafta admin paneline yönlendir.
 export async function pushAdminOnayBildirimi(tokens: string[], sayi: number) {
   if (tokens.length === 0) return;
-  const baslik = sayi === 1 ? "📰 Yeni AI haberi onay bekliyor" : `📰 ${sayi} AI haberi onay bekliyor`;
+  const baslik = sayi === 1 ? "Yeni AI haberi onay bekliyor" : `${sayi} AI haberi onay bekliyor`;
   const mesajlar = tokens.map((token) => ({
     to: token,
     sound: "default",

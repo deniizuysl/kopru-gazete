@@ -59,7 +59,7 @@ export async function haberdenIcerikUret(haberId: string): Promise<BildirimIceri
 
   const yazar = haber.yazarAdi || haber.yazar?.name || "";
   return {
-    baslik: "📰 Köprü Gazetesi",
+    baslik: "Köprü Gazetesi",
     icerik: yazar ? `${yazar}: ${haber.baslik}` : haber.baslik,
     haberId: haber.id,
   };

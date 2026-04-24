@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
     ...(kategori ? { kategori } : {}),
   };
 
-  const [haberler, toplam] = await Promise.all([
+  const [satirlar, toplam] = await Promise.all([
     prisma.haber.findMany({
       where,
       orderBy: { createdAt: "desc" },
@@ -48,6 +48,11 @@ export async function GET(request: NextRequest) {
     }),
     prisma.haber.count({ where }),
   ]);
+
+  const haberler = satirlar.map(({ icerik, ...h }) => ({
+    ...h,
+    ozet: icerik.replace(/<[^>]*>/g, "").slice(0, 240),
+  }));
 
   return NextResponse.json({ haberler, toplam, sayfa, limit });
 }
@@ -91,7 +96,7 @@ export async function POST(request: NextRequest) {
     });
     const tokenlar = kullanicilar.map((k) => k.pushToken!).filter(Boolean);
     if (tokenlar.length > 0) {
-      pushBildirimGonder(tokenlar, "📰 Yeni Haber", aiSonuc.baslik, haber.id).catch(() => {});
+      pushBildirimGonder(tokenlar, "Köprü Gazetesi", aiSonuc.baslik, haber.id).catch(() => {});
     }
 
     return NextResponse.json(haber, { status: 201 });

@@ -8,7 +8,8 @@ interface HaberKartiProps {
   haber: {
     id: string;
     baslik: string;
-    icerik: string;
+    icerik?: string;
+    ozet?: string;
     fotografUrls?: string[];
     fotografAlt?: string | null;
     kategori: string;
@@ -48,7 +49,8 @@ const kategoriIsimler: Record<string, string> = {
 };
 
 export default function HaberKarti({ haber, buyuk = false }: HaberKartiProps) {
-  const ozetMetin = haber.icerik.replace(/<[^>]*>/g, "").substring(0, buyuk ? 200 : 120) + "...";
+  const tamMetin = haber.ozet ?? (haber.icerik ? haber.icerik.replace(/<[^>]*>/g, "") : "");
+  const ozetMetin = tamMetin.substring(0, buyuk ? 200 : 120) + "...";
   const yazarAdi = haber.anonim ? "Anonim" : (haber.yazarAdi || haber.yazar?.name || "Bilinmiyor");
   const tarih = formatDistanceToNow(new Date(haber.createdAt), { addSuffix: true, locale: tr });
   const kapakFoto = haber.fotografUrls?.[0];

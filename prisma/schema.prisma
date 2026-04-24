@@ -90,6 +90,11 @@ model Haber {
   yorumlar           Yorum[]
   kaydedilenHaberler KaydedilenHaber[]
   zamanliPushlar     ZamanliPush[]
+
+  @@index([yayinlandiMi, createdAt(sort: Desc)])
+  @@index([yayinlandiMi, kategori, createdAt(sort: Desc)])
+  @@index([yayinlandiMi, bolge, createdAt(sort: Desc)])
+  @@index([onayBekliyor, createdAt(sort: Desc)])
 }
 
 model Yorum {
