@@ -14,14 +14,47 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const formData = await request.formData();
-    const icerik = formData.get("icerik") as string;
-    const kategori = (formData.get("kategori") as string) || "GENEL";
-    const anonim = formData.get("anonim") === "true";
-    const aiKullan = formData.get("aiKullan") !== "false";
-    const baslikOneri = ((formData.get("baslikOneri") as string) || "").trim();
-    const fotograflar = formData.getAll("fotograflar") as File[];
-    const bolgeRaw = formData.get("bolge");
+    const contentType = request.headers.get("content-type") || "";
+    let icerik: string;
+    let kategori: string;
+    let anonim: boolean;
+    let aiKullan: boolean;
+    let baslikOneri: string;
+    let bolgeRaw: unknown;
+    let fotografUrls: string[] = [];
+
+    if (contentType.includes("application/json")) {
+      // Yeni mobil: fotoğrafları client-side Cloudinary'ye yükleyip URL gönderir
+      const body = await request.json();
+      icerik = (body.icerik as string) || "";
+      kategori = (body.kategori as string) || "GENEL";
+      anonim = body.anonim === true;
+      aiKullan = body.aiKullan !== false;
+      baslikOneri = ((body.baslikOneri as string) || "").trim();
+      bolgeRaw = body.bolge;
+      fotografUrls = Array.isArray(body.fotografUrls)
+        ? (body.fotografUrls as unknown[]).filter((u): u is string => typeof u === "string")
+        : [];
+    } else {
+      // Eski mobil APK: fotoğraflar FormData içinde, server upload eder
+      const formData = await request.formData();
+      icerik = (formData.get("icerik") as string) || "";
+      kategori = (formData.get("kategori") as string) || "GENEL";
+      anonim = formData.get("anonim") === "true";
+      aiKullan = formData.get("aiKullan") !== "false";
+      baslikOneri = ((formData.get("baslikOneri") as string) || "").trim();
+      bolgeRaw = formData.get("bolge");
+      const fotograflar = formData.getAll("fotograflar") as File[];
+      for (const foto of fotograflar) {
+        if (foto.size > 0) {
+          const bytes = await foto.arrayBuffer();
+          const buffer = Buffer.from(bytes);
+          const { url } = await uploadImage(buffer, foto.name);
+          fotografUrls.push(url);
+        }
+      }
+    }
+
     const bolge = bolgeGecerliMi(bolgeRaw) ? bolgeRaw : null;
 
     if (!icerik || icerik.trim().length < 20) {
@@ -29,17 +62,6 @@ export async function POST(request: NextRequest) {
     }
     if (!aiKullan && baslikOneri.length < 5) {
       return NextResponse.json({ error: "Yapay zeka kapalıyken başlık zorunludur" }, { status: 400 });
-    }
-
-    // Fotoğrafları Cloudinary'ye yükle
-    const fotografUrls: string[] = [];
-    for (const foto of fotograflar) {
-      if (foto.size > 0) {
-        const bytes = await foto.arrayBuffer();
-        const buffer = Buffer.from(bytes);
-        const { url } = await uploadImage(buffer, foto.name);
-        fotografUrls.push(url);
-      }
     }
 
     // AI kullanılacaksa metni dönüştür, kullanılmayacaksa kullanıcının yazdığını koru
