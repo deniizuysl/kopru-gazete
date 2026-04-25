@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { haberYaz } from "@/lib/claude";
 import { pushBildirimGonder } from "@/lib/push";
+import { icerikModere } from "@/lib/moderasyon";
 import { z } from "zod";
 import { Kategori } from "@/app/generated/prisma/client";
 import { BOLGELER } from "@/lib/bolgeler";
@@ -13,6 +14,8 @@ const haberSchema = z.object({
   anonim: z.boolean().default(false),
   yazarAdi: z.string().optional(),
   bolge: z.enum(BOLGELER).optional(),
+  aiKullan: z.boolean().optional().default(true),
+  baslikOneri: z.string().optional(),
 });
 
 export async function GET(request: NextRequest) {
@@ -65,14 +68,25 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { hamIcerik, fotografUrls, anonim, yazarAdi, bolge } = haberSchema.parse(body);
+    const { hamIcerik, fotografUrls, anonim, yazarAdi, bolge, aiKullan, baslikOneri } = haberSchema.parse(body);
 
-    const aiSonuc = await haberYaz({
-      hamMetin: hamIcerik,
-      anonim,
-      yazarAdi: anonim ? undefined : (yazarAdi || session.user.name || undefined),
-      bolge,
-    });
+    const baslikOneriTrim = (baslikOneri || "").trim();
+    if (!aiKullan && baslikOneriTrim.length < 5) {
+      return NextResponse.json({ error: "Yapay zeka kapalıyken başlık zorunludur" }, { status: 400 });
+    }
+
+    const aiSonuc = aiKullan
+      ? await haberYaz({
+          hamMetin: hamIcerik,
+          anonim,
+          yazarAdi: anonim ? undefined : (yazarAdi || session.user.name || undefined),
+          bolge,
+        })
+      : { baslik: baslikOneriTrim, icerik: hamIcerik, fotografAlt: null as string | null, kategori: Kategori.GENEL as string };
+
+    const moderasyon = await icerikModere(aiSonuc.baslik, aiSonuc.icerik);
+    const spamMi = moderasyon.durum === "SPAM";
+    const incelemedeMi = !aiKullan || moderasyon.durum === "INCELE";
 
     const haber = await prisma.haber.create({
       data: {
@@ -86,10 +100,35 @@ export async function POST(request: NextRequest) {
         anonim,
         yazarAdi: anonim ? null : (yazarAdi || session.user.name || null),
         yazarId: anonim ? null : session.user.id,
+        spam: spamMi,
+        spamNedeni: spamMi ? moderasyon.neden : null,
+        onayBekliyor: incelemedeMi,
+        incelemeNedeni: incelemedeMi
+          ? (moderasyon.durum === "INCELE" ? moderasyon.neden : "Yapay zeka kullanılmadan gönderildi")
+          : null,
+        yayinlandiMi: !spamMi && !incelemedeMi,
       },
     });
 
-    // Push bildirimi gönder
+    if (spamMi) {
+      return NextResponse.json(
+        { error: "İçeriğiniz kurallara uygun bulunmadı.", spam: true },
+        { status: 422 }
+      );
+    }
+
+    if (incelemedeMi) {
+      return NextResponse.json(
+        {
+          ...haber,
+          mesaj: "Haberiniz editör onayına gönderildi, onaylandıktan sonra yayına çıkacak.",
+          onayBekliyor: true,
+        },
+        { status: 202 }
+      );
+    }
+
+    // Push bildirimi gönder (sadece yayınlanan haberler için)
     const kullanicilar = await prisma.user.findMany({
       where: { pushToken: { not: null } },
       select: { pushToken: true },

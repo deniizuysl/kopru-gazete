@@ -11,12 +11,15 @@ export default function HaberGonderPage() {
   const router = useRouter();
 
   const [icerik, setIcerik] = useState("");
+  const [baslik, setBaslik] = useState("");
   const [anonim, setAnonim] = useState(false);
+  const [aiKullan, setAiKullan] = useState(true);
   const [yazarAdi, setYazarAdi] = useState(session?.user?.name || "");
   const [fotograflar, setFotograflar] = useState<{ onizleme: string; url: string }[]>([]);
   const [fotografYukleniyor, setFotografYukleniyor] = useState(false);
   const [gonderiyor, setGonderiyor] = useState(false);
   const [hata, setHata] = useState("");
+  const [bilgi, setBilgi] = useState("");
   const dosyaInputRef = useRef<HTMLInputElement>(null);
 
   if (status === "loading") {
@@ -84,9 +87,14 @@ export default function HaberGonderPage() {
       setHata("Haber içeriği en az 20 karakter olmalı");
       return;
     }
+    if (!aiKullan && baslik.trim().length < 5) {
+      setHata("Yapay zeka kapalıyken başlık zorunlu");
+      return;
+    }
 
     setGonderiyor(true);
     setHata("");
+    setBilgi("");
 
     try {
       const res = await fetch("/api/haberler", {
@@ -97,10 +105,22 @@ export default function HaberGonderPage() {
           fotografUrls: fotograflar.map((f) => f.url),
           anonim,
           yazarAdi: anonim ? undefined : yazarAdi,
+          aiKullan,
+          baslikOneri: baslik.trim() || undefined,
         }),
       });
 
       const data = await res.json();
+
+      if (res.status === 202) {
+        setBilgi(data.mesaj || "Haberiniz editör onayına gönderildi.");
+        setIcerik("");
+        setBaslik("");
+        setFotograflar([]);
+        setGonderiyor(false);
+        return;
+      }
+
       if (!res.ok) {
         setHata(data.error || "Haber gönderilemedi");
         setGonderiyor(false);
@@ -117,11 +137,41 @@ export default function HaberGonderPage() {
   return (
     <main className="max-w-2xl mx-auto px-4 py-8">
       <h1 className="text-3xl font-serif font-bold text-gray-900 mb-2">Haber Gönder</h1>
-      <p className="text-gray-600 text-sm mb-8">Haberinizi yazın, yapay zeka profesyonel bir haber formatına dönüştürsün.</p>
+      <p className="text-gray-600 text-sm mb-8">
+        {aiKullan
+          ? "Haberinizi yazın, yapay zeka profesyonel bir haber formatına dönüştürsün."
+          : "Yazdığınız metin olduğu gibi yayınlanır. Editör onayından sonra yayına çıkar."}
+      </p>
 
       <form onSubmit={haberGonder} className="space-y-6">
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm text-blue-800">
-          <strong>Nasıl çalışır?</strong> Ham metninizi yazın, yapay zeka otomatik olarak başlık ve profesyonel haber formatı oluşturacak.
+        <div className="flex items-center gap-3 bg-[#faf7f0] border border-[#e5ddcb] rounded-lg p-4">
+          <div className="flex-1">
+            <p className="text-sm font-semibold text-[#2f4f4f]">Yapay zeka düzenlesin</p>
+            <p className="text-xs text-[#7b8b4a] mt-0.5">
+              {aiKullan ? "Metniniz haber diline çevrilir" : "Yazdığınız gibi gönderilir, editör onaylar"}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setAiKullan((v) => !v)}
+            className={`relative w-11 h-6 rounded-full transition-colors ${aiKullan ? "bg-[#2f4f4f]" : "bg-gray-300"}`}
+            aria-pressed={aiKullan}
+          >
+            <span className={`absolute top-0.5 w-5 h-5 rounded-full transition-all ${aiKullan ? "left-[calc(100%-1.375rem)] bg-[#c8a046]" : "left-0.5 bg-white"}`} />
+          </button>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Başlık {aiKullan ? <span className="text-gray-400 font-normal">(opsiyonel)</span> : <span className="text-red-500">*</span>}
+          </label>
+          <input
+            type="text"
+            value={baslik}
+            onChange={(e) => setBaslik(e.target.value)}
+            placeholder={aiKullan ? "Yapay zeka kendi başlık oluşturacak..." : "Haberin başlığını yazın"}
+            className="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+          />
         </div>
 
         <div>
@@ -214,12 +264,18 @@ export default function HaberGonderPage() {
           <p className="text-red-500 text-sm bg-red-50 border border-red-200 rounded px-4 py-3">{hata}</p>
         )}
 
+        {bilgi && (
+          <p className="text-green-700 text-sm bg-green-50 border border-green-200 rounded px-4 py-3">{bilgi}</p>
+        )}
+
         <button
           type="submit"
           disabled={gonderiyor || fotografYukleniyor}
           className="w-full bg-amber-500 text-black font-bold py-3 rounded-lg hover:bg-amber-500 disabled:opacity-50 transition-colors text-sm"
         >
-          {gonderiyor ? "Yapay Zeka Haberinizi Yazıyor..." : "Haber Gönder"}
+          {gonderiyor
+            ? (aiKullan ? "Yapay Zeka Haberinizi Yazıyor..." : "Gönderiliyor...")
+            : "Haber Gönder"}
         </button>
       </form>
     </main>
