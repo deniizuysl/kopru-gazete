@@ -27,6 +27,11 @@ interface AdminYorum {
   yazarAdi?: string | null;
   createdAt: string;
   haberBaslik: string;
+  haberId?: string;
+  parentId?: string | null;
+  gizli?: boolean;
+  bildiriSayisi?: number;
+  bildiriler?: { sebep: string | null; bildiren: { name: string | null } }[];
   yazar?: { name?: string | null } | null;
 }
 
@@ -189,6 +194,19 @@ export default function AdminPanel({ haberler: baslangicHaberler, yorumlar: basl
     setSiliniyor(null);
   }
 
+  async function yorumGizleToggle(id: string, gizli: boolean) {
+    const res = await fetch(`/api/yorumlar/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ gizli }),
+    });
+    if (res.ok) {
+      setYorumlar(yorumlar.map((y) => (y.id === id ? { ...y, gizli } : y)));
+    } else {
+      mesajGoster("hata", "Yorum güncellenemedi");
+    }
+  }
+
   async function reklamSil(id: string) {
     if (!confirm("Bu reklamı silmek istediğinize emin misiniz?")) return;
     setSiliniyor(id);
@@ -317,21 +335,70 @@ export default function AdminPanel({ haberler: baslangicHaberler, yorumlar: basl
 
       {aktifTab === "yorumlar" && (
         <div className="space-y-3">
-          {yorumlar.map((yorum) => (
-            <div key={yorum.id} className="bg-white border rounded-lg p-4 flex items-start justify-between gap-4">
-              <div className="flex-1 min-w-0">
-                <p className="text-sm text-gray-700">{yorum.icerik}</p>
-                <div className="flex flex-wrap gap-3 mt-1.5 text-xs text-gray-400">
-                  <span>{yorum.yazar?.name || "Bilinmiyor"}</span>
-                  <span className="truncate max-w-xs">{yorum.haberBaslik}</span>
-                  <span>{formatDistanceToNow(new Date(yorum.createdAt), { addSuffix: true, locale: tr })}</span>
+          {yorumlar.map((yorum) => {
+            const bildirili = (yorum.bildiriSayisi || 0) > 0;
+            return (
+              <div
+                key={yorum.id}
+                className={`border rounded-lg p-4 flex items-start justify-between gap-4 ${
+                  bildirili ? "bg-red-50 border-red-200" : yorum.gizli ? "bg-gray-100 border-gray-300" : "bg-white"
+                }`}
+              >
+                <div className="flex-1 min-w-0">
+                  <div className="flex flex-wrap gap-2 mb-1.5">
+                    {yorum.parentId && (
+                      <span className="text-[10px] font-medium bg-amber-100 text-amber-800 px-2 py-0.5 rounded">YANIT</span>
+                    )}
+                    {yorum.gizli && (
+                      <span className="text-[10px] font-medium bg-gray-200 text-gray-700 px-2 py-0.5 rounded">GİZLİ</span>
+                    )}
+                    {bildirili && (
+                      <span className="text-[10px] font-medium bg-red-200 text-red-800 px-2 py-0.5 rounded">
+                        {yorum.bildiriSayisi} ŞİKAYET
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-sm text-gray-700">{yorum.icerik}</p>
+                  <div className="flex flex-wrap gap-3 mt-1.5 text-xs text-gray-500">
+                    <span className="font-medium">{yorum.yazar?.name || "Bilinmiyor"}</span>
+                    {yorum.haberId ? (
+                      <Link href={`/haber/${yorum.haberId}`} target="_blank" className="truncate max-w-xs hover:underline">
+                        {yorum.haberBaslik}
+                      </Link>
+                    ) : (
+                      <span className="truncate max-w-xs">{yorum.haberBaslik}</span>
+                    )}
+                    <span>{formatDistanceToNow(new Date(yorum.createdAt), { addSuffix: true, locale: tr })}</span>
+                  </div>
+                  {bildirili && yorum.bildiriler && yorum.bildiriler.length > 0 && (
+                    <div className="mt-2 text-xs text-red-700 space-y-0.5">
+                      {yorum.bildiriler.map((b, i) => (
+                        <div key={i}>
+                          <span className="font-medium">{b.bildiren.name || "Bilinmiyor"}:</span>{" "}
+                          <span className="italic">{b.sebep || "(sebep belirtilmedi)"}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <button
+                    onClick={() => yorumGizleToggle(yorum.id, !yorum.gizli)}
+                    className="text-amber-700 hover:text-amber-800 text-xs font-medium px-3 py-1.5 border border-amber-200 rounded hover:bg-amber-50 transition-colors whitespace-nowrap"
+                  >
+                    {yorum.gizli ? "Göster" : "Gizle"}
+                  </button>
+                  <button
+                    onClick={() => yorumSil(yorum.id)}
+                    disabled={siliniyor === yorum.id}
+                    className="text-red-500 hover:text-red-700 text-xs font-medium px-3 py-1.5 border border-red-200 rounded hover:bg-red-50 disabled:opacity-50 transition-colors whitespace-nowrap"
+                  >
+                    {siliniyor === yorum.id ? "Siliniyor..." : "Sil"}
+                  </button>
                 </div>
               </div>
-              <button onClick={() => yorumSil(yorum.id)} disabled={siliniyor === yorum.id} className="text-red-500 hover:text-red-700 text-xs font-medium px-3 py-1.5 border border-red-200 rounded hover:bg-red-50 disabled:opacity-50 transition-colors whitespace-nowrap">
-                {siliniyor === yorum.id ? "Siliniyor..." : "Sil"}
-              </button>
-            </div>
-          ))}
+            );
+          })}
           {yorumlar.length === 0 && <p className="text-gray-500 text-sm text-center py-8">Yorum bulunamadı</p>}
         </div>
       )}

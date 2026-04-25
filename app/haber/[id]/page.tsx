@@ -31,6 +31,7 @@ export default async function HaberDetay({
     include: {
       yazar: { select: { name: true, image: true } },
       yorumlar: {
+        where: { gizli: false },
         orderBy: { createdAt: "desc" },
         include: {
           yazar: { select: { name: true, image: true } },
@@ -109,6 +110,9 @@ export default async function HaberDetay({
           id: y.id,
           icerik: y.icerik,
           createdAt: y.createdAt.toISOString(),
+          gizli: y.gizli,
+          parentId: y.parentId,
+          yazarId: y.yazarId,
           yazar: y.yazar,
         }))}
       />

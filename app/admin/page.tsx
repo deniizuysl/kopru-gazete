@@ -29,13 +29,21 @@ export default async function AdminPage() {
     }),
     prisma.yorum.findMany({
       orderBy: { createdAt: "desc" },
-      take: 50,
+      take: 200,
       select: {
         id: true,
         icerik: true,
+        gizli: true,
+        parentId: true,
         createdAt: true,
-        haber: { select: { baslik: true } },
+        haber: { select: { id: true, baslik: true } },
         yazar: { select: { name: true } },
+        _count: { select: { bildiriler: true } },
+        bildiriler: {
+          select: { sebep: true, bildiren: { select: { name: true } } },
+          take: 5,
+          orderBy: { createdAt: "desc" },
+        },
       },
     }),
     prisma.reklam.findMany({
@@ -52,15 +60,28 @@ export default async function AdminPage() {
           ...h,
           createdAt: h.createdAt.toISOString(),
         }))}
-        yorumlar={yorumlar.map((y) => ({
-          id: y.id,
-          icerik: y.icerik,
-          anonim: false,
-          yazarAdi: y.yazar?.name || null,
-          createdAt: y.createdAt.toISOString(),
-          haberBaslik: y.haber.baslik,
-          yazar: y.yazar,
-        }))}
+        yorumlar={yorumlar
+          .slice()
+          .sort((a, b) => {
+            const af = a._count.bildiriler;
+            const bf = b._count.bildiriler;
+            if (af !== bf) return bf - af;
+            return b.createdAt.getTime() - a.createdAt.getTime();
+          })
+          .map((y) => ({
+            id: y.id,
+            icerik: y.icerik,
+            anonim: false,
+            yazarAdi: y.yazar?.name || null,
+            createdAt: y.createdAt.toISOString(),
+            haberBaslik: y.haber.baslik,
+            haberId: y.haber.id,
+            parentId: y.parentId,
+            gizli: y.gizli,
+            bildiriSayisi: y._count.bildiriler,
+            bildiriler: y.bildiriler,
+            yazar: y.yazar,
+          }))}
         reklamlar={reklamlar.map((r) => ({
           ...r,
           createdAt: r.createdAt.toISOString(),

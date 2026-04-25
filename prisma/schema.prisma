@@ -25,6 +25,7 @@ model User {
   haberler          Haber[]
   yorumlar          Yorum[]
   yorumBegeni       YorumBegeni[]
+  yorumBildirileri  YorumBildiri[]
   bildirimler       Bildirim[]
   kaydedilenHaberler KaydedilenHaber[]
 }
@@ -100,6 +101,7 @@ model Haber {
 model Yorum {
   id        String   @id @default(cuid())
   icerik    String   @db.Text
+  gizli     Boolean  @default(false)
   createdAt DateTime @default(now())
 
   haberId String
@@ -108,7 +110,28 @@ model Yorum {
   yazarId String?
   yazar   User?   @relation(fields: [yazarId], references: [id], onDelete: SetNull)
 
+  parentId String?
+  parent   Yorum?  @relation("YorumYanit", fields: [parentId], references: [id], onDelete: Cascade)
+  yanitlar Yorum[] @relation("YorumYanit")
+
   begeniler YorumBegeni[]
+  bildiriler YorumBildiri[]
+
+  @@index([haberId, parentId, createdAt])
+}
+
+model YorumBildiri {
+  id        String   @id @default(cuid())
+  sebep     String?
+  createdAt DateTime @default(now())
+
+  yorumId String
+  yorum   Yorum  @relation(fields: [yorumId], references: [id], onDelete: Cascade)
+
+  bildirenId String
+  bildiren   User   @relation(fields: [bildirenId], references: [id], onDelete: Cascade)
+
+  @@unique([yorumId, bildirenId])
 }
 
 model YorumBegeni {
