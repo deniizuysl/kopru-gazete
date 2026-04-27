@@ -33,6 +33,7 @@ export default async function HaberDetay({
       yorumlar: {
         where: { gizli: false },
         orderBy: { createdAt: "desc" },
+        take: 50,
         include: {
           yazar: { select: { name: true, image: true } },
         },

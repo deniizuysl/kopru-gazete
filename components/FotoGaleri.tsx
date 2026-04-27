@@ -26,6 +26,7 @@ export default function FotoGaleri({ fotografUrls, fotografAlt, baslik }: FotoGa
             src={fotografUrls[0]}
             alt={fotografAlt || baslik}
             fill
+            sizes="(min-width: 1024px) 80vw, 100vw"
             className="object-cover"
             priority
           />
@@ -49,6 +50,7 @@ export default function FotoGaleri({ fotografUrls, fotografAlt, baslik }: FotoGa
                   src={url}
                   alt={`Fotoğraf ${i + 2}`}
                   fill
+                  sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 100vw"
                   className="object-cover hover:scale-105 transition-transform duration-300"
                 />
               </div>
@@ -90,6 +92,7 @@ export default function FotoGaleri({ fotografUrls, fotografAlt, baslik }: FotoGa
               src={fotografUrls[acikFoto]}
               alt={`Fotoğraf ${acikFoto + 1}`}
               fill
+              sizes="(min-width: 1280px) 70vw, 100vw"
               className="object-contain"
             />
           </div>
