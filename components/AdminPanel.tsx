@@ -425,7 +425,7 @@ export default function AdminPanel({ haberler: baslangicHaberler, yorumlar: basl
                 className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
               />
               <div>
-                <p className="text-xs text-gray-500 mb-1">Resim URL'si (Cloudinary, Google Drive vb.)</p>
+                <p className="text-xs text-gray-500 mb-1">Resim URL&apos;si (Cloudinary, Google Drive vb.)</p>
                 <input
                   type="url"
                   placeholder="https://... (resim URL'si)"

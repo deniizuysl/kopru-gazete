@@ -30,7 +30,9 @@ export default function Navbar() {
   const profilRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMobilAcik(false);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setProfilAcik(false);
   }, [pathname, searchParams]);
 
