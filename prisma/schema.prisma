@@ -238,6 +238,9 @@ model Eczane {
   ad             String
   telefon        String?
   adres          String?
+  // Haftalık nöbet rotasyonu için sıra (1, 2, 3...). null ise rotasyona katılmaz.
+  // Aktif nöbetçi /api/eczane GET'inde anchor tarihten itibaren geçen hafta sayısına göre hesaplanır.
+  nobetSirasi    Int?
   nobetBaslangic DateTime?
   nobetBitis     DateTime?
   createdAt      DateTime  @default(now())

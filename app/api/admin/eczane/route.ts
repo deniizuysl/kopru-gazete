@@ -22,11 +22,16 @@ export async function POST(req: NextRequest) {
   if (!(await yetkiKontrol(req))) {
     return NextResponse.json({ error: "Yetkisiz" }, { status: 401 });
   }
-  const { ad, telefon, adres } = await req.json();
+  const { ad, telefon, adres, nobetSirasi } = await req.json();
   if (!ad) return NextResponse.json({ error: "Ad gerekli" }, { status: 400 });
 
   const eczane = await (prisma as any).eczane.create({
-    data: { ad, telefon: telefon || null, adres: adres || null },
+    data: {
+      ad,
+      telefon: telefon || null,
+      adres: adres || null,
+      nobetSirasi: typeof nobetSirasi === "number" ? nobetSirasi : null,
+    },
   });
   return NextResponse.json(eczane, { status: 201 });
 }
@@ -35,7 +40,7 @@ export async function PATCH(req: NextRequest) {
   if (!(await yetkiKontrol(req))) {
     return NextResponse.json({ error: "Yetkisiz" }, { status: 401 });
   }
-  const { id, ad, telefon, adres, nobetBaslangic, nobetBitis } = await req.json();
+  const { id, ad, telefon, adres, nobetBaslangic, nobetBitis, nobetSirasi } = await req.json();
   if (!id) return NextResponse.json({ error: "id gerekli" }, { status: 400 });
 
   const eczane = await (prisma as any).eczane.update({
@@ -44,6 +49,9 @@ export async function PATCH(req: NextRequest) {
       ...(ad !== undefined ? { ad } : {}),
       ...(telefon !== undefined ? { telefon } : {}),
       ...(adres !== undefined ? { adres } : {}),
+      ...(nobetSirasi !== undefined
+        ? { nobetSirasi: nobetSirasi === null ? null : Number(nobetSirasi) }
+        : {}),
       ...(nobetBaslangic !== undefined
         ? { nobetBaslangic: nobetBaslangic ? new Date(nobetBaslangic) : null }
         : {}),
