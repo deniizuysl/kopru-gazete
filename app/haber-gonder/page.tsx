@@ -119,7 +119,7 @@ export default function HaberGonderPage() {
     }
   }
 
-  async function gonder(opts: { sonBaslik: string; sonIcerik: string; aiCikti: boolean }) {
+  async function gonder(opts: { sonBaslik: string; sonIcerik: string; aiCikti: boolean; kategori?: string }) {
     setGonderiyor(true);
     setHata("");
     setBilgi("");
@@ -136,6 +136,7 @@ export default function HaberGonderPage() {
           yazarAdi: anonim ? undefined : yazarAdi,
           aiKullan: false,
           baslikOneri: opts.sonBaslik,
+          kategori: opts.kategori,
         }),
       });
 
@@ -172,7 +173,7 @@ export default function HaberGonderPage() {
         await onizlemeAl();
         return;
       }
-      await gonder({ sonBaslik: onizleme.baslik.trim(), sonIcerik: onizleme.icerik.trim(), aiCikti: true });
+      await gonder({ sonBaslik: onizleme.baslik.trim(), sonIcerik: onizleme.icerik.trim(), aiCikti: true, kategori: onizleme.kategori });
       return;
     }
     // AI kapalı: doğrudan gönder

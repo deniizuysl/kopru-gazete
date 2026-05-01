@@ -16,6 +16,7 @@ const haberSchema = z.object({
   bolge: z.enum(BOLGELER).optional(),
   aiKullan: z.boolean().optional().default(true),
   baslikOneri: z.string().optional(),
+  kategori: z.nativeEnum(Kategori).optional(),
 });
 
 export async function GET(request: NextRequest) {
@@ -68,7 +69,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { hamIcerik, fotografUrls, anonim, yazarAdi, bolge, aiKullan, baslikOneri } = haberSchema.parse(body);
+    const { hamIcerik, fotografUrls, anonim, yazarAdi, bolge, aiKullan, baslikOneri, kategori } = haberSchema.parse(body);
 
     const baslikOneriTrim = (baslikOneri || "").trim();
     if (!aiKullan && baslikOneriTrim.length < 5) {
@@ -82,7 +83,7 @@ export async function POST(request: NextRequest) {
           yazarAdi: anonim ? undefined : (yazarAdi || session.user.name || undefined),
           bolge,
         })
-      : { baslik: baslikOneriTrim, icerik: hamIcerik, fotografAlt: null as string | null, kategori: Kategori.GENEL as string };
+      : { baslik: baslikOneriTrim, icerik: hamIcerik, fotografAlt: null as string | null, kategori: (kategori || Kategori.GENEL) as string };
 
     const moderasyon = await icerikModere(aiSonuc.baslik, aiSonuc.icerik);
     const spamMi = moderasyon.durum === "SPAM";
