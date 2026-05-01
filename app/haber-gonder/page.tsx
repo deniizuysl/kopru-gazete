@@ -22,6 +22,12 @@ export default function HaberGonderPage() {
   const [bilgi, setBilgi] = useState("");
   const dosyaInputRef = useRef<HTMLInputElement>(null);
 
+  // Önizleme akışı: AI açıkken kullanıcı önce "Önizle"ye basar, dönen başlık+metni
+  // düzenleyip sonra "Gönder"e basar. Böylece AI'nin yanlış kullandığı yerel terimler
+  // yayına gitmeden önce kullanıcı tarafından düzeltilebilir.
+  const [onizlemeYukleniyor, setOnizlemeYukleniyor] = useState(false);
+  const [onizleme, setOnizleme] = useState<{ baslik: string; icerik: string; kategori: string } | null>(null);
+
   if (status === "loading") {
     return <div className="flex justify-center items-center min-h-screen text-gray-500">Yükleniyor...</div>;
   }
@@ -81,32 +87,55 @@ export default function HaberGonderPage() {
     setFotograflar((prev) => prev.filter((_, i) => i !== index));
   }
 
-  async function haberGonder(e: React.FormEvent) {
-    e.preventDefault();
+  async function onizlemeAl() {
     if (icerik.trim().length < 20) {
       setHata("Haber içeriği en az 20 karakter olmalı");
       return;
     }
-    if (!aiKullan && baslik.trim().length < 5) {
-      setHata("Yapay zeka kapalıyken başlık zorunlu");
-      return;
-    }
+    setOnizlemeYukleniyor(true);
+    setHata("");
+    setBilgi("");
 
+    try {
+      const res = await fetch("/api/ai/yeniden-yaz", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          hamIcerik: icerik.trim(),
+          anonim,
+          yazarAdi: anonim ? undefined : yazarAdi,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setHata(data.error || "Önizleme alınamadı");
+        return;
+      }
+      setOnizleme({ baslik: data.baslik, icerik: data.icerik, kategori: data.kategori });
+    } catch {
+      setHata("Önizleme alınırken hata oluştu");
+    } finally {
+      setOnizlemeYukleniyor(false);
+    }
+  }
+
+  async function gonder(opts: { sonBaslik: string; sonIcerik: string; aiCikti: boolean }) {
     setGonderiyor(true);
     setHata("");
     setBilgi("");
 
     try {
+      // Önizleme onaylanmış metin → AI tekrar dokunmasın diye aiKullan: false ile gönder
       const res = await fetch("/api/haberler", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          hamIcerik: icerik.trim(),
+          hamIcerik: opts.sonIcerik,
           fotografUrls: fotograflar.map((f) => f.url),
           anonim,
           yazarAdi: anonim ? undefined : yazarAdi,
-          aiKullan,
-          baslikOneri: baslik.trim() || undefined,
+          aiKullan: false,
+          baslikOneri: opts.sonBaslik,
         }),
       });
 
@@ -116,6 +145,7 @@ export default function HaberGonderPage() {
         setBilgi(data.mesaj || "Haberiniz editör onayına gönderildi.");
         setIcerik("");
         setBaslik("");
+        setOnizleme(null);
         setFotograflar([]);
         setGonderiyor(false);
         return;
@@ -134,6 +164,29 @@ export default function HaberGonderPage() {
     }
   }
 
+  async function formGonder(e: React.FormEvent) {
+    e.preventDefault();
+    if (aiKullan) {
+      // AI açıksa: önce önizleme, sonra düzenle, sonra gönder
+      if (!onizleme) {
+        await onizlemeAl();
+        return;
+      }
+      await gonder({ sonBaslik: onizleme.baslik.trim(), sonIcerik: onizleme.icerik.trim(), aiCikti: true });
+      return;
+    }
+    // AI kapalı: doğrudan gönder
+    if (icerik.trim().length < 20) {
+      setHata("Haber içeriği en az 20 karakter olmalı");
+      return;
+    }
+    if (baslik.trim().length < 5) {
+      setHata("Yapay zeka kapalıyken başlık zorunlu");
+      return;
+    }
+    await gonder({ sonBaslik: baslik.trim(), sonIcerik: icerik.trim(), aiCikti: false });
+  }
+
   return (
     <main className="max-w-2xl mx-auto px-4 py-8">
       <h1 className="text-3xl font-serif font-bold text-gray-900 mb-2">Haber Gönder</h1>
@@ -143,7 +196,7 @@ export default function HaberGonderPage() {
           : "Yazdığınız metin olduğu gibi yayınlanır. Editör onayından sonra yayına çıkar."}
       </p>
 
-      <form onSubmit={haberGonder} className="space-y-6">
+      <form onSubmit={formGonder} className="space-y-6">
         <div className="flex items-center gap-3 bg-[#faf7f0] border border-[#e5ddcb] rounded-lg p-4">
           <div className="flex-1">
             <p className="text-sm font-semibold text-[#2f4f4f]">Yapay zeka düzenlesin</p>
@@ -153,7 +206,7 @@ export default function HaberGonderPage() {
           </div>
           <button
             type="button"
-            onClick={() => setAiKullan((v) => !v)}
+            onClick={() => { setAiKullan((v) => !v); setOnizleme(null); }}
             className={`relative w-11 h-6 rounded-full transition-colors ${aiKullan ? "bg-[#2f4f4f]" : "bg-gray-300"}`}
             aria-pressed={aiKullan}
           >
@@ -180,7 +233,7 @@ export default function HaberGonderPage() {
           </label>
           <textarea
             value={icerik}
-            onChange={(e) => setIcerik(e.target.value)}
+            onChange={(e) => { setIcerik(e.target.value); if (onizleme) setOnizleme(null); }}
             placeholder="Ne oldu? Nerede? Ne zaman? Kimler vardı? Detayları yazın..."
             rows={8}
             required
@@ -268,14 +321,55 @@ export default function HaberGonderPage() {
           <p className="text-green-700 text-sm bg-green-50 border border-green-200 rounded px-4 py-3">{bilgi}</p>
         )}
 
+        {onizleme && (
+          <div className="border-2 border-[#c8a046] rounded-lg p-4 bg-[#faf7f0] space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-bold text-[#2f4f4f]">Yapay zeka önizlemesi — gönderemden önce kontrol et</h3>
+              <button
+                type="button"
+                onClick={() => setOnizleme(null)}
+                className="text-xs text-[#7b8b4a] underline hover:text-[#2f4f4f]"
+              >
+                İptal / yeniden yaz
+              </button>
+            </div>
+            <p className="text-xs text-[#7b8b4a]">
+              Aşağıdaki başlık ve metni istediğin gibi düzelt — yerel terim hatalarını burada yakala. &quot;Gönder&quot;e basınca düzelttiğin hali editör onayına düşer, AI tekrar dokunmaz.
+            </p>
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Başlık</label>
+              <input
+                type="text"
+                value={onizleme.baslik}
+                onChange={(e) => setOnizleme({ ...onizleme, baslik: e.target.value })}
+                className="w-full border border-[#e5ddcb] rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Haber metni</label>
+              <textarea
+                value={onizleme.icerik}
+                onChange={(e) => setOnizleme({ ...onizleme, icerik: e.target.value })}
+                rows={12}
+                className="w-full border border-[#e5ddcb] rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white resize-none font-serif"
+              />
+              <p className="text-xs text-gray-400 mt-1">{onizleme.icerik.length} karakter</p>
+            </div>
+          </div>
+        )}
+
         <button
           type="submit"
-          disabled={gonderiyor || fotografYukleniyor}
+          disabled={gonderiyor || fotografYukleniyor || onizlemeYukleniyor}
           className="w-full bg-amber-500 text-black font-bold py-3 rounded-lg hover:bg-amber-500 disabled:opacity-50 transition-colors text-sm"
         >
-          {gonderiyor
-            ? (aiKullan ? "Yapay Zeka Haberinizi Yazıyor..." : "Gönderiliyor...")
-            : "Haber Gönder"}
+          {onizlemeYukleniyor
+            ? "Yapay Zeka Önizleme Hazırlıyor..."
+            : gonderiyor
+            ? "Gönderiliyor..."
+            : aiKullan && !onizleme
+            ? "Önizleme Al"
+            : "Haberi Gönder"}
         </button>
       </form>
     </main>

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { haberYaz } from "@/lib/claude";
-import { pushBildirimGonder } from "@/lib/push";
+import { pushBildirimGonder, pushAdminYeniHaber } from "@/lib/push";
 import { icerikModere } from "@/lib/moderasyon";
 import { z } from "zod";
 import { Kategori } from "@/app/generated/prisma/client";
@@ -117,6 +117,22 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Admin'lere yeni haber bildirimi (onay bekleyen veya direkt yayınlanan farketmez)
+    const adminler = await prisma.user.findMany({
+      where: { role: "ADMIN", pushToken: { not: null } },
+      select: { pushToken: true },
+    });
+    const adminTokenlar = adminler.map((a) => a.pushToken!).filter(Boolean);
+    if (adminTokenlar.length > 0) {
+      pushAdminYeniHaber({
+        tokens: adminTokenlar,
+        baslik: aiSonuc.baslik,
+        yazar: anonim ? "Anonim" : (yazarAdi || session.user.name || "Bilinmiyor"),
+        haberId: haber.id,
+        onayBekliyor: incelemedeMi,
+      }).catch(() => {});
+    }
+
     if (incelemedeMi) {
       return NextResponse.json(
         {
@@ -128,7 +144,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Push bildirimi gönder (sadece yayınlanan haberler için)
+    // Yayınlandıysa tüm kullanıcılara da push gönder
     const kullanicilar = await prisma.user.findMany({
       where: { pushToken: { not: null } },
       select: { pushToken: true },

@@ -32,3 +32,28 @@ export async function pushAdminOnayBildirimi(tokens: string[], sayi: number) {
     body: JSON.stringify(mesajlar),
   });
 }
+
+// Admin'lere yeni kullanıcı haberi geldiğinde push. Hem direkt yayınlananlar hem onay bekleyenler için.
+export async function pushAdminYeniHaber(opts: {
+  tokens: string[];
+  baslik: string;
+  yazar: string;
+  haberId: string;
+  onayBekliyor: boolean;
+}) {
+  if (opts.tokens.length === 0) return;
+  const ustBaslik = opts.onayBekliyor ? "Yeni haber onay bekliyor" : "Yeni haber yayınlandı";
+  const mesajlar = opts.tokens.map((token) => ({
+    to: token,
+    sound: "default",
+    title: ustBaslik,
+    body: `${opts.yazar}: ${opts.baslik}`,
+    data: { tip: opts.onayBekliyor ? "onay" : "haber", haberId: opts.haberId },
+  }));
+
+  await fetch("https://exp.host/--/api/v2/push/send", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(mesajlar),
+  });
+}

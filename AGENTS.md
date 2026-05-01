@@ -38,6 +38,11 @@ GENEL `#2f4f4f` · SPOR `#7b8b4a` · KULTUR `#c8a046` · EKONOMI `#2f4f4f` · EG
 - Üretim tamamlanınca tüm `ADMIN` kullanıcılara push gider (`pushAdminOnayBildirimi`).
 - Ajan haberi işareti: `hamIcerik` `[AJAN-KAYNAK]` veya `[AJAN-OZEL:...]` ile başlar. Dedupe link bazlıdır.
 
+## Haber Gönderim Akışı
+- AI açıkken iki adımlı: önce `POST /api/ai/yeniden-yaz` (kaydetmez, sadece başlık+metin+kategori döner) → kullanıcı düzenler → `POST /api/haberler` (web) veya `/api/mobil/haber` (mobil) `aiKullan: false` ile gider. AI tekrar dokunmaz.
+- AI kapalıyken tek adım, başlık zorunlu, ham metin direkt editör onayına düşer.
+- Her yeni gönderimde admin'lere push gider (`pushAdminYeniHaber`) — onay bekleyen veya direkt yayınlanan farketmez. Yayınlananlar ayrıca tüm kullanıcılara push gönderir.
+
 ## Dikkat
 - `useSearchParams` kullanan componentler Suspense sınırı ister (Next.js 16).
 - Namaz vakti widget'ı istenmedi — ekleme.

@@ -6,6 +6,7 @@ import { uploadImage } from "@/lib/cloudinary";
 import { icerikModere } from "@/lib/moderasyon";
 import { Kategori } from "@/app/generated/prisma/client";
 import { bolgeGecerliMi } from "@/lib/bolgeler";
+import { pushAdminYeniHaber, pushBildirimGonder } from "@/lib/push";
 
 export async function POST(request: NextRequest) {
   const kullanici = await mobilTokenDogrula(request.headers.get("authorization"));
@@ -109,6 +110,22 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Admin'lere yeni haber bildirimi
+    const adminler = await prisma.user.findMany({
+      where: { role: "ADMIN", pushToken: { not: null } },
+      select: { pushToken: true },
+    });
+    const adminTokenlar = adminler.map((a) => a.pushToken!).filter(Boolean);
+    if (adminTokenlar.length > 0) {
+      pushAdminYeniHaber({
+        tokens: adminTokenlar,
+        baslik: aiSonuc.baslik,
+        yazar: anonim ? "Anonim" : (kullanici.name || "Bilinmiyor"),
+        haberId: haber.id,
+        onayBekliyor: incelemedeMi,
+      }).catch(() => {});
+    }
+
     if (incelemedeMi) {
       return NextResponse.json(
         {
@@ -118,6 +135,16 @@ export async function POST(request: NextRequest) {
         },
         { status: 202 }
       );
+    }
+
+    // Yayınlandıysa tüm kullanıcılara push
+    const tumKullanicilar = await prisma.user.findMany({
+      where: { pushToken: { not: null } },
+      select: { pushToken: true },
+    });
+    const tumTokenlar = tumKullanicilar.map((k) => k.pushToken!).filter(Boolean);
+    if (tumTokenlar.length > 0) {
+      pushBildirimGonder(tumTokenlar, "Köprü Gazetesi", aiSonuc.baslik, haber.id).catch(() => {});
     }
 
     return NextResponse.json(haber, { status: 201 });
